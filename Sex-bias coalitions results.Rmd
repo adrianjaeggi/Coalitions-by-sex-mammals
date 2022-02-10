@@ -21,7 +21,9 @@ load("post_m3.robj")
 load("post_m4.robj")
 load("post_m4a.robj")
 load("post_m4b.robj")
-load("post_m4c.robj")
+load("post_m5.robj")
+load("post_m5a.robj")
+load("post_m5b.robj")
 d<- read.csv("sexbiascoalitions.csv", header=TRUE)
 d$Primate<- 0
 d$Primate[d$Order=="Primata"]<- 1
@@ -71,9 +73,354 @@ diff.fm.m1<- p.m1[[1]][,1]-p.m1[[1]][,2]
 
 ```
 
-Contrary to our first prediction, females did not cooperate more in within-group coalitions than males (Fig. 1, Model 1, see also supplement). In fact, the probability of a female bias in coalitions (median = `r round(pred_probs_m1,2)[1,1]`, 90% credible interval = `r round(pred_probs_m1,2)[1,2]` – `r round(pred_probs_m1,2)[1,3]`) was virtually the same as the probability of a male bias (`r round(pred_probs_m1,2)[2,1]`, `r round(pred_probs_m1,2)[2,2]` – `r round(pred_probs_m1,2)[2,3]`) and the most likely state was unbiased coalition formation (`r round(pred_probs_m1,2)[3,1]`, `r round(pred_probs_m1,2)[3,2]` – `r round(pred_probs_m1,2)[3,3]`). Thus, only `r round(100*sum(diff.fm.m1>0)/length(diff.fm.m1),0)`% of the posterior probability supports our prediction of female bias being more likely than male bias, and none of the three possible states was greater than chance (% of posterior > 0.33 for female bias: `r round(100*sum(p.m1[[1]][,1]>0.33)/length(p.m1[[1]][,1]),0)`%; male bias: `r round(100*sum(p.m1[[1]][,2]>0.33)/length(p.m1[[1]][,2]),0)`%; unbiased: `r round(100*sum(p.m1[[1]][,3]>0.33)/length(p.m1[[1]][,3]),0)`%). The phylogenetic signal was weak (median λ = `r round(median(lambda.m1),2)`, 90% CI = `r round(HPDI(lambda.m1, prob=0.90)[1],2)` – `r round(HPDI(lambda.m1, prob=0.90)[2],2)`)). 
+Contrary to our first prediction, females did not cooperate more in within-group coalitions than males (Fig. 1, Model 1, see also supplement). In fact, the probability of a female bias in coalitions (median = `r round(pred_probs_m1,2)[1,1]`, 90% credible interval = `r round(pred_probs_m1,2)[1,2]` - `r round(pred_probs_m1,2)[1,3]`) was virtually the same as the probability of a male bias (`r round(pred_probs_m1,2)[2,1]`, `r round(pred_probs_m1,2)[2,2]` - `r round(pred_probs_m1,2)[2,3]`) and the most likely state was unbiased coalition formation (`r round(pred_probs_m1,2)[3,1]`, `r round(pred_probs_m1,2)[3,2]` - `r round(pred_probs_m1,2)[3,3]`). Thus, only `r round(100*sum(diff.fm.m1>0)/length(diff.fm.m1),0)`% of the posterior probability supports our prediction of female bias being more likely than male bias, and none of the three possible states was greater than chance (% of posterior > 0.33 for female bias: `r round(100*sum(p.m1[[1]][,1]>0.33)/length(p.m1[[1]][,1]),0)`%; male bias: `r round(100*sum(p.m1[[1]][,2]>0.33)/length(p.m1[[1]][,2]),0)`%; unbiased: `r round(100*sum(p.m1[[1]][,3]>0.33)/length(p.m1[[1]][,3]),0)`%). The phylogenetic signal was weak (median λ = `r round(median(lambda.m1),2)`, 90% CI = `r round(HPDI(lambda.m1, prob=0.90)[1],2)` - `r round(HPDI(lambda.m1, prob=0.90)[2],2)`)). 
 
 This general pattern did not change appreciably when comparing species living in mixed-sex groups (n = `r length(d$SexComposition[d$SexComposition=="mixed"])` species) with sex-segregated ones (n = `r length(d$SexComposition[d$SexComposition=="segregated"])` species; Model 2), or primates (n= `r length(d$Primate[d$Primate==1])` species) with non-primates (n= `r length(d$Primate[d$Primate==0])` species; Model 3). Specifically, the odds of female bias and male bias were essentially the same in sex-segregated species compared to mixed-sex species (female bias: median odds ratio = `r round(median(exp(post_m2$b_muFemalebiased_SexCompositionsegregated)),2)`, 90% CI = `r round(HPDI(exp(post_m2$b_muFemalebiased_SexCompositionsegregated), prob=0.90)[1],2)` - `r round(HPDI(exp(post_m2$b_muFemalebiased_SexCompositionsegregated), prob=0.90)[2],2)`, probability OR>1 = `r round(100*sum(post_m2$b_muFemalebiased_SexCompositionsegregated>0)/nrow(post_m2),0)`%; male bias: median OR = `r round(median(exp(post_m2$b_muMalebiased_SexCompositionsegregated)),2)`, 90% CI = `r round(HPDI(exp(post_m2$b_muMalebiased_SexCompositionsegregated), prob=0.90)[1],2)` - `r round(HPDI(exp(post_m2$b_muMalebiased_SexCompositionsegregated), prob=0.90)[2],2)`, probability OR>1 = `r round(100*sum(post_m2$b_muMalebiased_SexCompositionsegregated>0)/nrow(post_m2),0)`%) or primates compared to non-primates (female bias: median odds ratio = `r round(median(exp(post_m3$b_muFemalebiased_Primate)),2)`, 90% CI = `r round(HPDI(exp(post_m3$b_muFemalebiased_Primate), prob=0.90)[1],2)` - `r round(HPDI(exp(post_m3$b_muFemalebiased_Primate), prob=0.90)[2],2)`, probability OR>1 = `r round(100*sum(post_m3$b_muFemalebiased_Primate>0)/nrow(post_m3),0)`%; male bias: median OR = `r round(median(exp(post_m3$b_muMalebiased_Primate)),2)`, 90% CI = `r round(HPDI(exp(post_m3$b_muMalebiased_Primate), prob=0.90)[1],2)` - `r round(HPDI(exp(post_m3$b_muMalebiased_Primate), prob=0.90)[2],2)`, probability OR>1 = `r round(100*sum(post_m3$b_muMalebiased_Primate>0)/nrow(post_m3),0)`%). We therefore did not stratify our subsequent analyses by these variables.
 
-To test our socio-ecological predictors we included philopatry, sexual dimorphism, and food defensibility in the same model (Model 4). As a robustness check, we also modeled each of these competing causes on its own. In weak support of our predictions, the probability of female-biased coalitions was somewhat greater in female philopatric species, compared to species where both sexes disperse (OR = `r round(median(exp(post_m4$b_muFemalebiased_PhilopatryF)),2)`, 90% CI = `r round(HPDI(exp(post_m4$b_muFemalebiased_PhilopatryF), prob=0.90)[1],2)` - `r round(HPDI(exp(post_m4$b_muFemalebiased_PhilopatryF), prob=0.90)[2],2)`, probability OR>1 = `r round(100*sum(post_m4$b_muFemalebiased_PhilopatryF>0)/nrow(post_m4),0)`%), and in species with defensible food resources compared to species with non-defensible food resources (OR = `r round(median(exp(post_m4$b_muFemalebiased_Food_resource_defendable)),2)`, 90% CI = `r round(HPDI(exp(post_m4$b_muFemalebiased_Food_resource_defendable), prob=0.90)[1],2)` - `r round(HPDI(exp(post_m4$b_muFemalebiased_Food_resource_defendable), prob=0.90)[2],2)`, probability OR>1 = `r round(100*sum(post_m4$b_muFemalebiased_Food_resource_defendable>0)/nrow(post_m4),0)`%), though in both cases there was high uncertainty. Male bias in coalitions was not greater in species with male philopatry compared to species in which both sexes disperse (OR = `r round(median(exp(post_m4$b_muMalebiased_PhilopatryM)),2)`, 90% CI = `r round(HPDI(exp(post_m4$b_muMalebiased_PhilopatryM), prob=0.90)[1],2)` - `r round(HPDI(exp(post_m4$b_muMalebiased_PhilopatryM), prob=0.90)[2],2)`, probability OR>1 = `r round(100*sum(post_m4$b_muMalebiased_PhilopatryM>0)/nrow(post_m4),0)`%); however, as predicted the probability of male bias did increase with increasing sexual dimorphism (OR for 1SD change in dimorphism = `r round(median(exp(post_m4$b_muMalebiased_SexDim.z)),2)`, 90% CI = `r round(HPDI(exp(post_m4$b_muMalebiased_SexDim.z), prob=0.90)[1],2)` - `r round(HPDI(exp(post_m4$b_muMalebiased_SexDim.z), prob=0.90)[2],2)`, probability OR>1 = `r round(100*sum(post_m4$b_muMalebiased_SexDim.z>0)/nrow(post_m4),0)`%). These inferences did not change when considering each predictor in a model on its own (see Supplement).
+```{r compute contrasts for Models 4 & 5}
+## philopatry
+p_muFemalebiased_PhilopatryB<- post_m4$b_muFemalebiased_Intercept+post_m4$b_muFemalebiased_PhilopatryB
+p_muFemalebiased_PhilopatryF<- post_m4$b_muFemalebiased_Intercept+post_m4$b_muFemalebiased_PhilopatryF
+p_muFemalebiased_PhilopatryM<- post_m4$b_muFemalebiased_Intercept+post_m4$b_muFemalebiased_PhilopatryM
+# F vs all others: concatenate samples and draw 8000 random samples
+# still not 100% sure if this is correct - does it matter that samples are no longer matched?
+## actually, the current approach assumes that all categories occur at the same rate
+# e.g. if cat1 2x more likely than cat2, and 10x more likely than cat3, combining samples will yield sth like 6x more likely - but what if cat2 was much more common than cat3? then re-coding cat2+cat3 as cat_non1 will give a different result
 
+# alternative would be to average samples across the non-F categories
+p_muFemalebiased_PhilopatryAnyNonFlong<- c(post_m4$b_muFemalebiased_Intercept, p_muFemalebiased_PhilopatryM, p_muFemalebiased_PhilopatryB) # combine samples from all non F 
+p_muFemalebiased_PhilopatryAnyNonF<- sample(p_muFemalebiased_PhilopatryAnyNonFlong, size = length(p_muFemalebiased_PhilopatryF), replace = FALSE) # draw random samples from the combined posterior, to get same number of samples as for F
+
+ORfemalebiasphiloFvsB<- exp(p_muFemalebiased_PhilopatryF/p_muFemalebiased_PhilopatryB)
+ORfemalebiasphiloFvsM<- exp(p_muFemalebiased_PhilopatryF/p_muFemalebiased_PhilopatryM)
+ORfemalebiasphiloFvsAnyNonF<- exp(p_muFemalebiased_PhilopatryF/p_muFemalebiased_PhilopatryAnyNonF)
+
+p_muMalebiased_PhilopatryB<- post_m4$b_muMalebiased_Intercept+post_m4$b_muMalebiased_PhilopatryB
+p_muMalebiased_PhilopatryF<- post_m4$b_muMalebiased_Intercept+post_m4$b_muMalebiased_PhilopatryF
+p_muMalebiased_PhilopatryM<- post_m4$b_muMalebiased_Intercept+post_m4$b_muMalebiased_PhilopatryM
+p_muMalebiased_PhilopatryAnyNonMlong<- c(post_m4$b_muMalebiased_Intercept, p_muMalebiased_PhilopatryF, p_muMalebiased_PhilopatryB) # combine samples from all non M
+p_muMalebiased_PhilopatryAnyNonM<- sample(p_muMalebiased_PhilopatryAnyNonMlong, size = length(p_muMalebiased_PhilopatryM), replace = FALSE) # draw random samples from the combined posterior, to get same number of samples as for F
+
+ORmalebiasphiloMvsB<- exp(p_muMalebiased_PhilopatryM/p_muMalebiased_PhilopatryB)
+ORmalebiasphiloMvsF<- exp(p_muMalebiased_PhilopatryM/p_muMalebiased_PhilopatryF)
+ORmalebiasphiloMvsAnyNonM<- exp(p_muMalebiased_PhilopatryM/p_muMalebiased_PhilopatryAnyNonM)
+
+```
+
+To test our socio-ecological predictors we ran one binomial model on the presence of female coalitions (Model 4), including food defensibility (yes/no) and female philopatry (yes/no) as predictors, and one on the presence of male coalitions (Model 5), including sexual dimorphism and male philopatry (yes/no) as predictors. Note that for the purpose of these analyses we scored female philopatry when females or both sexes are philopatric, and male philopatry when males or both sexes are philopatric. As a robustness check, we also modeled each of these competing causes on its own. 
+
+The predicted probabilities of coalition types as a function of covariates are shown in Figure X. In weak support of our philopatry prediction, the probability of female-biased coalitions was somewhat greater in female philopatric species (n = `r length(d$Philopatry[d$Philopatry=="F"])`), compared to species where both sexes disperse (n = `length(d$Philopatry[d$Philopatry=="N"])`, OR = `r round(median(exp(post_m4$b_muFemalebiased_PhilopatryF)),2)`, 90% CI = `r round(HPDI(exp(post_m4$b_muFemalebiased_PhilopatryF), prob=0.90)[1],2)` - `r round(HPDI(exp(post_m4$b_muFemalebiased_PhilopatryF), prob=0.90)[2],2)`, probability OR>1 = `r round(100*sum(post_m4$b_muFemalebiased_PhilopatryF>0)/nrow(post_m4),0)`%), where males are philopatric (n = `length(d$Philopatry[d$Philopatry=="M"])`, OR = `r round(median(ORfemalebiasphiloFvsM),2)`, 90% CI = `r round(HPDI(ORfemalebiasphiloFvsM, prob=0.90)[1],2)` - `r round(HPDI(ORfemalebiasphiloFvsM, prob=0.90)[2],2)`, probability OR>1 = `r round(100*sum(ORfemalebiasphiloFvsM>1)/length(ORfemalebiasphiloFvsM),0)`%), where both sexes are philopatric (n = `length(d$Philopatry[d$Philopatry=="B"])`, OR = `r round(median(ORfemalebiasphiloFvsB),2)`, 90% CI = `r round(HPDI(ORfemalebiasphiloFvsB, prob=0.90)[1],2)` - `r round(HPDI(ORfemalebiasphiloFvsB, prob=0.90)[2],2)`, probability OR>1 = `r round(100*sum(ORfemalebiasphiloFvsB>1)/length(ORfemalebiasphiloFvsB),0)`%), or compared to any of these categories (OR = `r round(median(ORfemalebiasphiloFvsAnyNonF),2)`, 90% CI = `r round(HPDI(ORfemalebiasphiloFvsAnyNonF, prob=0.90)[1],2)` - `r round(HPDI(ORfemalebiasphiloFvsAnyNonF, prob=0.90)[2],2)`, probability OR>1 = `r round(100*sum(ORfemalebiasphiloFvsAnyNonF>1)/length(ORfemalebiasphiloFvsAnyNonF),0)`%), though there was high uncertainty in these estimates. In contrast, male coalitions were not more likely in species with male philopatry, whether compared to species in which both sexes disperse (OR = `r round(median(exp(post_m4$b_muMalebiased_PhilopatryM)),2)`, 90% CI = `r round(HPDI(exp(post_m4$b_muMalebiased_PhilopatryM), prob=0.90)[1],2)` - `r round(HPDI(exp(post_m4$b_muMalebiased_PhilopatryM), prob=0.90)[2],2)`, probability OR>1 = `r round(100*sum(post_m4$b_muMalebiased_PhilopatryM>0)/nrow(post_m4),0)`%), where females are philopatric (OR = `r round(median(ORmalebiasphiloMvsF),2)`, 90% CI = `r round(HPDI(ORmalebiasphiloMvsF, prob=0.90)[1],2)` - `r round(HPDI(ORmalebiasphiloMvsF, prob=0.90)[2],2)`, probability OR>1 = `r round(100*sum(ORmalebiasphiloMvsF>1)/length(ORmalebiasphiloMvsF),0)`%), where both sexes are philopatric (OR = `r round(median(ORmalebiasphiloMvsB),2)`, 90% CI = `r round(HPDI(ORmalebiasphiloMvsB, prob=0.90)[1],2)` - `r round(HPDI(ORmalebiasphiloMvsB, prob=0.90)[2],2)`, probability OR>1 = `r round(100*sum(ORmalebiasphiloMvsB>1)/length(ORmalebiasphiloMvsB),0)`%), or compared to all of these categories (OR = `r round(median(ORmalebiasphiloMvsAnyNonM),2)`, 90% CI = `r round(HPDI(ORmalebiasphiloMvsAnyNonM, prob=0.90)[1],2)` - `r round(HPDI(ORmalebiasphiloMvsAnyNonM, prob=0.90)[2],2)`, probability OR>1 = `r round(100*sum(ORmalebiasphiloMvsAnyNonM>1)/length(ORmalebiasphiloMvsAnyNonM),0)`%). 
+
+With regard to the other predictions, female coalitions were not appreciably more likely in species with defensible food resources compared to species with non-defensible food resources (OR = `r round(median(exp(post_m4$b_muFemalebiased_Food_resource_defendable)),2)`, 90% CI = `r round(HPDI(exp(post_m4$b_muFemalebiased_Food_resource_defendable), prob=0.90)[1],2)` - `r round(HPDI(exp(post_m4$b_muFemalebiased_Food_resource_defendable), prob=0.90)[2],2)`, probability OR>1 = `r round(100*sum(post_m4$b_muFemalebiased_Food_resource_defendable>0)/nrow(post_m4),0)`%); however, as predicted the probability of male bias did increase with increasing sexual dimorphism (OR for 1SD change in dimorphism = `r round(median(exp(post_m4$b_muMalebiased_SexDim.z)),2)`, 90% CI = `r round(HPDI(exp(post_m4$b_muMalebiased_SexDim.z), prob=0.90)[1],2)` - `r round(HPDI(exp(post_m4$b_muMalebiased_SexDim.z), prob=0.90)[2],2)`, probability OR>1 = `r round(100*sum(post_m4$b_muMalebiased_SexDim.z>0)/nrow(post_m4),0)`%). Other associations that we did not make specific predictions for, i.e. between female coalitions and sexual dimorphism or between male coalitions and food defensibility were weak and uncertain (see supplement). These inferences did not change when considering each predictor in a model on its own (see Supplement).
+
+```{r Figure X}
+## pre-processing: compute predicted probabilities from model 4
+# --> for simplicity, use m4a-c so that predictions are not conditional on other covariates (and no need to marginalize over them given that they're competing causes rather than confounders and results are virtually the same as m4)
+
+# Model 4a: Food defensibility
+# not defensible
+{    K <- 3 #number of character states used
+  ns <- nrow(post_m4a)
+  n <- 1
+  
+  softmax2 <- function(x) {
+    x <- max(x) - x
+    exp(-x)/sum(exp(-x))
+  }
+  
+  p.m4a.nd <- list()
+  
+  for ( i in 1:n ) {
+    p.m4a.nd[[i]] <- sapply( 1:K , function(k) {
+      if ( k < K ) {
+        ptemp <- post_m4a[,k] # intercept only = non - defensible
+      } else {
+        ptemp <- rep(0,ns)
+      }
+      return(ptemp)
+    })
+    ## The values are converted to probabilities using the softmax function
+    ## which ensures that the predicted values across categories sum to
+    ## 100% probabilities.
+    for ( s in 1:ns ) p.m4a.nd[[i]][s,] <- softmax2( p.m4a.nd[[i]][s,] )
+  }
+}
+colMeans(p.m4a.nd[[1]]) # quick check if reasonable
+# defensible
+{    K <- 3 #number of character states used
+  ns <- nrow(post_m4a)
+  n <- 1
+  
+  softmax2 <- function(x) {
+    x <- max(x) - x
+    exp(-x)/sum(exp(-x))
+  }
+  
+  p.m4a.d <- list()
+  
+  for ( i in 1:n ) {
+    p.m4a.d[[i]] <- sapply( 1:K , function(k) {
+      if ( k < K ) {
+        ptemp <- post_m4a[,k] + post_m4a[,k+2] # intercept + defensible
+      } else {
+        ptemp <- rep(0,ns)
+      }
+      return(ptemp)
+    })
+    ## The values are converted to probabilities using the softmax function
+    ## which ensures that the predicted values across categories sum to
+    ## 100% probabilities.
+    for ( s in 1:ns ) p.m4a.d[[i]][s,] <- softmax2( p.m4a.d[[i]][s,] )
+  }
+}
+colMeans(p.m4a.d[[1]]) # quick check if reasonable
+
+# Model 4c: Sexual dimorphism
+# monomorphic
+{    K <- 3 #number of character states used
+  ns <- nrow(post_m4c)
+  n <- 1
+  
+  softmax2 <- function(x) {
+    x <- max(x) - x
+    exp(-x)/sum(exp(-x))
+  }
+  
+  p.m4c.mono <- list()
+  
+  for ( i in 1:n ) {
+    p.m4c.mono[[i]] <- sapply( 1:K , function(k) {
+      if ( k < K ) {
+        ptemp <- post_m4c[,k] # intercept only = monomorphic
+      } else {
+        ptemp <- rep(0,ns)
+      }
+      return(ptemp)
+    })
+    ## The values are converted to probabilities using the softmax function
+    ## which ensures that the predicted values across categories sum to
+    ## 100% probabilities.
+    for ( s in 1:ns ) p.m4c.mono[[i]][s,] <- softmax2( p.m4c.mono[[i]][s,] )
+  }
+}
+colMeans(p.m4c.mono[[1]]) # quick check if reasonable
+# + 1SD dimorphic (males larger)
+{    K <- 3 #number of character states used
+  ns <- nrow(post_m4c)
+  n <- 1
+  
+  softmax2 <- function(x) {
+    x <- max(x) - x
+    exp(-x)/sum(exp(-x))
+  }
+  
+  p.m4c.dim <- list()
+  
+  for ( i in 1:n ) {
+    p.m4c.dim[[i]] <- sapply( 1:K , function(k) {
+      if ( k < K ) {
+        ptemp <- post_m4c[,k] + post_m4c[,k+2] # intercept + SexDim.z
+      } else {
+        ptemp <- rep(0,ns)
+      }
+      return(ptemp)
+    })
+    ## The values are converted to probabilities using the softmax function
+    ## which ensures that the predicted values across categories sum to
+    ## 100% probabilities.
+    for ( s in 1:ns ) p.m4c.dim[[i]][s,] <- softmax2( p.m4c.dim[[i]][s,] )
+  }
+}
+colMeans(p.m4c.dim[[1]]) # quick check if reasonable
+
+# Model 4b: Philopatry
+# neither sex
+{    K <- 3 #number of character states used
+  ns <- nrow(post_m4b)
+  n <- 1
+  
+  softmax2 <- function(x) {
+    x <- max(x) - x
+    exp(-x)/sum(exp(-x))
+  }
+  
+  p.m4b.N <- list()
+  
+  for ( i in 1:n ) {
+    p.m4b.N[[i]] <- sapply( 1:K , function(k) {
+      if ( k < K ) {
+        ptemp <- post_m4b[,k] # intercept only = monomorphic
+      } else {
+        ptemp <- rep(0,ns)
+      }
+      return(ptemp)
+    })
+    ## The values are converted to probabilities using the softmax function
+    ## which ensures that the predicted values across categories sum to
+    ## 100% probabilities.
+    for ( s in 1:ns ) p.m4b.N[[i]][s,] <- softmax2( p.m4b.N[[i]][s,] )
+  }
+}
+colMeans(p.m4b.N[[1]]) # quick check if reasonable
+# both sexes
+{    K <- 3 #number of character states used
+  ns <- nrow(post_m4b)
+  n <- 1
+  
+  softmax2 <- function(x) {
+    x <- max(x) - x
+    exp(-x)/sum(exp(-x))
+  }
+  
+  p.m4b.B <- list()
+  
+  for ( i in 1:n ) {
+    p.m4b.B[[i]] <- sapply( 1:K , function(k) {
+      if ( k < K ) {
+        ptemp <- post_m4b[,k] + post_m4b[,k*3] # intercept + philo = B [columns 3 and 6]
+      } else {
+        ptemp <- rep(0,ns)
+      }
+      return(ptemp)
+    })
+    ## The values are converted to probabilities using the softmax function
+    ## which ensures that the predicted values across categories sum to
+    ## 100% probabilities.
+    for ( s in 1:ns ) p.m4b.B[[i]][s,] <- softmax2( p.m4b.B[[i]][s,] )
+  }
+}
+colMeans(p.m4b.B[[1]]) # quick check if reasonable
+# females
+{    K <- 3 #number of character states used
+  ns <- nrow(post_m4b)
+  n <- 1
+  
+  softmax2 <- function(x) {
+    x <- max(x) - x
+    exp(-x)/sum(exp(-x))
+  }
+  
+  p.m4b.F <- list()
+  
+  for ( i in 1:n ) {
+    p.m4b.F[[i]] <- sapply( 1:K , function(k) {
+      if ( k < K ) {
+        ptemp <- post_m4b[,k] + post_m4b[,k*4-(k-1)] # intercept + philo = F [columns 4 and 7]
+      } else {
+        ptemp <- rep(0,ns)
+      }
+      return(ptemp)
+    })
+    ## The values are converted to probabilities using the softmax function
+    ## which ensures that the predicted values across categories sum to
+    ## 100% probabilities.
+    for ( s in 1:ns ) p.m4b.F[[i]][s,] <- softmax2( p.m4b.F[[i]][s,] )
+  }
+}
+colMeans(p.m4b.F[[1]]) # quick check if reasonable
+# males
+{    K <- 3 #number of character states used
+  ns <- nrow(post_m4b)
+  n <- 1
+  
+  softmax2 <- function(x) {
+    x <- max(x) - x
+    exp(-x)/sum(exp(-x))
+  }
+  
+  p.m4b.M <- list()
+  
+  for ( i in 1:n ) {
+    p.m4b.M[[i]] <- sapply( 1:K , function(k) {
+      if ( k < K ) {
+        ptemp <- post_m4b[,k] + post_m4b[,k+2*(k+1)] # intercept + philo = F [columns 5 and 8]
+      } else {
+        ptemp <- rep(0,ns)
+      }
+      return(ptemp)
+    })
+    ## The values are converted to probabilities using the softmax function
+    ## which ensures that the predicted values across categories sum to
+    ## 100% probabilities.
+    for ( s in 1:ns ) p.m4b.M[[i]][s,] <- softmax2( p.m4b.M[[i]][s,] )
+  }
+}
+colMeans(p.m4b.M[[1]]) # quick check if reasonable
+
+
+## prepare plotting
+library(MetBrewer)
+col.female<- MetPalettes$Egypt[[1]][2]
+col.male<- MetPalettes$Egypt[[1]][3]
+col.both<- MetPalettes$Egypt[[1]][4]
+
+tiff("Figure X.tif", compression = "lzw", 
+       height = 12.0, width = 12.0, units = "cm", res = 600, pointsize = 5)
+# 3 x 3 figure panel
+par(mfrow=c(3,3))
+
+# a) intercept only model
+dens(p.m4a.nd[[1]][,1], xlab="Predicted probability", ylab="Density", main="a) No covariates", col="white", ylim=c(0,3), xlim=c(0,1), cex.main=1.5, cex.axis=1.2, cex.lab=1.2)
+polygon(density(p.m1[[1]][,1]), col=adjustcolor(col.female, alpha.f=0.5))
+polygon(density(p.m1[[1]][,2]), col=adjustcolor(col.male, alpha.f=0.5))
+polygon(density(p.m1[[1]][,3]), col=adjustcolor(col.both, alpha.f=0.5))
+legend("topright", fill=c(adjustcolor(col.female, alpha.f=0.5), adjustcolor(col.male, alpha.f=0.5), adjustcolor(col.both, alpha.f=0.5)), border="black", legend=c("Females only", "Males only", "Both sexes"), bty="n", cex=1.5)
+# mtext("a)", cex=1.5, adj=0)
+# b) food = not defensible
+dens(p.m1[[1]][,1], xlab="Predicted probability", ylab="Density", main="b) Food = non-defensible", col="white", ylim=c(0,3), xlim=c(0,1), cex.main=1.5, cex.axis=1.2, cex.lab=1.2)
+polygon(density(p.m4a.nd[[1]][,1]), col=adjustcolor(col.female, alpha.f=0.5))
+polygon(density(p.m4a.nd[[1]][,2]), col=adjustcolor(col.male, alpha.f=0.5))
+polygon(density(p.m4a.nd[[1]][,3]), col=adjustcolor(col.both, alpha.f=0.5))
+legend("topright", fill=c(adjustcolor(col.female, alpha.f=0.5), adjustcolor(col.male, alpha.f=0.5), adjustcolor(col.both, alpha.f=0.5)), border="black", legend=c("Females only", "Males only", "Both sexes"), bty="n", cex=1.5)
+
+# c) food = defensible
+dens(p.m1[[1]][,1], xlab="Predicted probability", ylab="Density", main="c) Food = defensible", col="white", ylim=c(0,3), xlim=c(0,1), cex.main=1.5, cex.axis=1.2, cex.lab=1.2)
+polygon(density(p.m4a.d[[1]][,1]), col=adjustcolor(col.female, alpha.f=0.5))
+polygon(density(p.m4a.d[[1]][,2]), col=adjustcolor(col.male, alpha.f=0.5))
+polygon(density(p.m4a.d[[1]][,3]), col=adjustcolor(col.both, alpha.f=0.5))
+legend("topright", fill=c(adjustcolor(col.female, alpha.f=0.5), adjustcolor(col.male, alpha.f=0.5), adjustcolor(col.both, alpha.f=0.5)), border="black", legend=c("Females only", "Males only", "Both sexes"), bty="n", cex=1.5)
+
+# d) sex dim = 0
+dens(p.m1[[1]][,1], xlab="Predicted probability", ylab="Density", main="d) Monomorphic", col="white", ylim=c(0,3), xlim=c(0,1), cex.main=1.5, cex.axis=1.2, cex.lab=1.2)
+polygon(density(p.m4c.mono[[1]][,1]), col=adjustcolor(col.female, alpha.f=0.5))
+polygon(density(p.m4c.mono[[1]][,2]), col=adjustcolor(col.male, alpha.f=0.5))
+polygon(density(p.m4c.mono[[1]][,3]), col=adjustcolor(col.both, alpha.f=0.5))
+legend("topright", fill=c(adjustcolor(col.female, alpha.f=0.5), adjustcolor(col.male, alpha.f=0.5), adjustcolor(col.both, alpha.f=0.5)), border="black", legend=c("Females only", "Males only", "Both sexes"), bty="n", cex=1.5)
+
+# e) sex dim = 1
+dens(p.m1[[1]][,1], xlab="Predicted probability", ylab="Density", main="e) Dimorphic (+1SD)", col="white", ylim=c(0,3), xlim=c(0,1), cex.main=1.5, cex.axis=1.2, cex.lab=1.2)
+polygon(density(p.m4c.dim[[1]][,1]), col=adjustcolor(col.female, alpha.f=0.5))
+polygon(density(p.m4c.dim[[1]][,2]), col=adjustcolor(col.male, alpha.f=0.5))
+polygon(density(p.m4c.dim[[1]][,3]), col=adjustcolor(col.both, alpha.f=0.5))
+legend("topright", fill=c(adjustcolor(col.female, alpha.f=0.5), adjustcolor(col.male, alpha.f=0.5), adjustcolor(col.both, alpha.f=0.5)), border="black", legend=c("Females only", "Males only", "Both sexes"), bty="n", cex=1.5)
+
+# f) philo = N
+dens(p.m1[[1]][,1], xlab="Predicted probability", ylab="Density", main="f) Philopatry = Neither", col="white", ylim=c(0,3), xlim=c(0,1), cex.main=1.5, cex.axis=1.2, cex.lab=1.2)
+polygon(density(p.m4b.N[[1]][,1]), col=adjustcolor(col.female, alpha.f=0.5))
+polygon(density(p.m4b.N[[1]][,2]), col=adjustcolor(col.male, alpha.f=0.5))
+polygon(density(p.m4b.N[[1]][,3]), col=adjustcolor(col.both, alpha.f=0.5))
+legend("topright", fill=c(adjustcolor(col.female, alpha.f=0.5), adjustcolor(col.male, alpha.f=0.5), adjustcolor(col.both, alpha.f=0.5)), border="black", legend=c("Females only", "Males only", "Both sexes"), bty="n", cex=1.5)
+
+# g) philo = F
+dens(p.m1[[1]][,1], xlab="Predicted probability", ylab="Density", main="g) Philopatry = Females", col="white", ylim=c(0,3), xlim=c(0,1), cex.main=1.5, cex.axis=1.2, cex.lab=1.2)
+polygon(density(p.m4b.F[[1]][,1]), col=adjustcolor(col.female, alpha.f=0.5))
+polygon(density(p.m4b.F[[1]][,2]), col=adjustcolor(col.male, alpha.f=0.5))
+polygon(density(p.m4b.F[[1]][,3]), col=adjustcolor(col.both, alpha.f=0.5))
+legend("topright", fill=c(adjustcolor(col.female, alpha.f=0.5), adjustcolor(col.male, alpha.f=0.5), adjustcolor(col.both, alpha.f=0.5)), border="black", legend=c("Females only", "Males only", "Both sexes"), bty="n", cex=1.5)
+
+# h) philo = M
+dens(p.m1[[1]][,1], xlab="Predicted probability", ylab="Density", main="h) Philopatry = Males", col="white", ylim=c(0,3), xlim=c(0,1), cex.main=1.5, cex.axis=1.2, cex.lab=1.2)
+polygon(density(p.m4b.M[[1]][,1]), col=adjustcolor(col.female, alpha.f=0.5))
+polygon(density(p.m4b.M[[1]][,2]), col=adjustcolor(col.male, alpha.f=0.5))
+polygon(density(p.m4b.M[[1]][,3]), col=adjustcolor(col.both, alpha.f=0.5))
+legend("topright", fill=c(adjustcolor(col.female, alpha.f=0.5), adjustcolor(col.male, alpha.f=0.5), adjustcolor(col.both, alpha.f=0.5)), border="black", legend=c("Females only", "Males only", "Both sexes"), bty="n", cex=1.5)
+
+# i) philo = B
+dens(p.m1[[1]][,1], xlab="Predicted probability", ylab="Density", main="i) Philopatry = Both", col="white", ylim=c(0,3), xlim=c(0,1), cex.main=1.5, cex.axis=1.2, cex.lab=1.2)
+polygon(density(p.m4b.B[[1]][,1]), col=adjustcolor(col.female, alpha.f=0.5))
+polygon(density(p.m4b.B[[1]][,2]), col=adjustcolor(col.male, alpha.f=0.5))
+polygon(density(p.m4b.B[[1]][,3]), col=adjustcolor(col.both, alpha.f=0.5))
+legend("topright", fill=c(adjustcolor(col.female, alpha.f=0.5), adjustcolor(col.male, alpha.f=0.5), adjustcolor(col.both, alpha.f=0.5)), border="black", legend=c("Females only", "Males only", "Both sexes"), bty="n", cex=1.5)
+dev.off()
+
+```

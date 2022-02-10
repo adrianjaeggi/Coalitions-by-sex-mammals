@@ -28,8 +28,8 @@ for(i in 1:100){
 cons.tree<- consensus.edges(trees)
 A.cons<- vcv.phylo(cons.tree)
 
-d$coalitions<- relevel(d$coalitions, ref="Unbiased")
-d$Philopatry<- relevel(d$Philopatry, ref="N")
+d$coalitions<- relevel(as.factor(d$coalitions), ref="Unbiased")
+d$Philopatry<- relevel(as.factor(d$Philopatry), ref="N")
 
 
   ### Model 1: Intercept only ###
@@ -164,27 +164,27 @@ post_m3<- posterior_samples(m3)
 save(post_m3, file="post_m3.robj")
 
 
-    ### Model 4: Main predictors ###
+    ### Model 4: Female coalitions ~ Defensibility, Philopatry ###
 
 # transform predictors
-d$SexDim.z<- (d$Sex_Dim-1)/sd(d$Sex_Dim) # mean = monomorphic, units = SD
+d$f_philopatry<- 1
+d$f_philopatry[d$Philopatry=="N" | d$Philopatry=="M"]<- 0
+
+# re-code DV
+d$f_coalitions<- 1
+d$f_coalitions[d$coalitions=="Male-biased"]<- 0
 
 # adjust prior
-get_prior(coalitions ~ Food_resource_defendable + Philopatry + SexDim.z + (1|Genus_species), data = d, family = categorical(), cov_ranef = list(Genus_species = A.cons))
+get_prior(f_coalitions ~ Food_resource_defendable + f_philopatry + (1|Genus_species), data = d, family = bernoulli(), cov_ranef = list(Genus_species = A.cons))
 prior.m4<- c(
-  prior(normal(0,1), "Intercept", dpar="muFemalebiased"), # reasonably narrow prior (favors values from ~ -10 to 10 in log-odds space, i.e. basically 0-1 in probability space) --> no need to sample infinite space beyond that
-  prior(normal(0,1), "Intercept", dpar="muMalebiased"),
-  prior(normal(0,0.5), "b", dpar="muFemalebiased"), # same prior for all slopes
-  prior(normal(0,0.5), "b", dpar="muMalebiased"),
-  prior(cauchy(0,0.1), "sd", dpar="muFemalebiased"), # pretty strong prior on variance components because phylo variance with huge CIs
-  prior(cauchy(0,0.1), "sd", dpar="muMalebiased")
-)
+  prior(normal(0,1), "Intercept"), 
+  prior(normal(0,0.5), "b"), 
+  prior(cauchy(0,0.1), "sd"))
 
 # simulate from prior to check slopes on non-categorical predictors
-m4.prior<- brm(coalitions ~ Food_resource_defendable + Philopatry + SexDim.z + (1|Genus_species), data = d, family = categorical(), cov_ranef = list(Genus_species = A.cons), 
+m4.prior<- brm(f_coalitions ~ Food_resource_defendable + f_philopatry + (1|Genus_species), data = d, family = bernoulli(), cov_ranef = list(Genus_species = A.cons), 
                prior = prior.m4, chains = 4, cores = 4, iter = 4000, warmup = 2000, control = list(adapt_delta = 0.999, max_treedepth = 15, stepsize = 0.01),
                sample_prior = "only")
-
 post_m4.prior<- posterior_samples(m4.prior)
 plot(NULL, xlim=c(-3,3), ylim=c(-5,5)) # -5/5 is roughly 0/1 on logistic scale
 for(i in sample(1:nrow(post_m4.prior), 100)){
@@ -192,12 +192,12 @@ for(i in sample(1:nrow(post_m4.prior), 100)){
 }
 # reasonable prior, most associations not too strong
 
-m4<- brm(coalitions ~ Food_resource_defendable + Philopatry + SexDim.z + (1|Genus_species), data = d, family = categorical(), cov_ranef = list(Genus_species = A.cons), 
+m4<- brm(f_coalitions ~ Food_resource_defendable + f_philopatry + (1|Genus_species), data = d, family = bernoulli(), cov_ranef = list(Genus_species = A.cons), 
                prior = prior.m4, chains = 4, cores = 4, iter = 4000, warmup = 2000, control = list(adapt_delta = 0.999, max_treedepth = 15, stepsize = 0.01))
-# adjust sampler settings until no divergent transitions --> 1 divergent transition, fine for now
+# no divergent transitions
 plot(m4) # good convergence, chains overlapping and stationary; some extreme values for sd's
 summary(m4) # all Rhat 1, ESS >1000
-# strongest effect is of sexual dimorphism
+# no effect of defensibility, philopatry
 
 # extract samples and save for post-processing
 post_m4<- posterior_samples(m4)
@@ -205,32 +205,63 @@ save(post_m4, file="post_m4.robj")
 
 
   ## robustness checks: each predictor on its own
-m4a<- brm(coalitions ~ Food_resource_defendable + (1|Genus_species), data = d, family = categorical(), cov_ranef = list(Genus_species = A.cons), 
-         prior = prior.m4, chains = 4, cores = 4, iter = 5000, warmup = 3000, control = list(adapt_delta = 0.999, max_treedepth = 15, stepsize = 0.01))
-# 40 divergent transitions -> increase warmup, iter -> no more divergent transitions
+m4a<- brm(f_coalitions ~ Food_resource_defendable + (1|Genus_species), data = d, family = bernoulli(), cov_ranef = list(Genus_species = A.cons), 
+         prior = prior.m4, chains = 4, cores = 4, iter = 4000, warmup = 2000, control = list(adapt_delta = 0.999, max_treedepth = 15, stepsize = 0.01))
 plot(m4a)
 summary(m4a)
-# all good, no strong associations
+# all good, no strong association
 post_m4a<- posterior_samples(m4a)
 save(post_m4a, file="post_m4a.robj")
 
-m4b<- brm(coalitions ~ Philopatry + (1|Genus_species), data = d, family = categorical(), cov_ranef = list(Genus_species = A.cons), 
+m4b<- brm(f_coalitions ~ f_philopatry + (1|Genus_species), data = d, family = bernoulli(), cov_ranef = list(Genus_species = A.cons), 
          prior = prior.m4, chains = 4, cores = 4, iter = 4000, warmup = 2000, control = list(adapt_delta = 0.999, max_treedepth = 15, stepsize = 0.01))
-# no divergent transitions
+# 1 divergent transitions
 plot(m4b)
 summary(m4b)
-# all good, no strong effects, though trend to more female coalitions with female philopatry
+# all good, no strong effects
 post_m4b<- posterior_samples(m4b)
 save(post_m4b, file="post_m4b.robj")
 
-m4c<- brm(coalitions ~ SexDim.z + (1|Genus_species), data = d, family = categorical(), cov_ranef = list(Genus_species = A.cons), 
+
+    ### Model 5: Male coalitions ~ Dimorphism, Philopatry ###
+
+# transform predictors
+d$SexDim.z<- (d$Sex_Dim-1)/sd(d$Sex_Dim) # mean = monomorphic, units = SD
+d$m_philopatry<- 1
+d$m_philopatry[d$Philopatry=="N" | d$Philopatry=="F"]<- 0
+
+# re-code DV
+d$m_coalitions<- 1
+d$m_coalitions[d$coalitions=="Female-biased"]<- 0
+
+# same prior as for m4
+m5<- brm(m_coalitions ~ SexDim.z + m_philopatry + (1|Genus_species), data = d, family = bernoulli(), cov_ranef = list(Genus_species = A.cons), 
          prior = prior.m4, chains = 4, cores = 4, iter = 4000, warmup = 2000, control = list(adapt_delta = 0.999, max_treedepth = 15, stepsize = 0.01))
 # no divergent transitions
-plot(m4c)
-summary(m4c)
-# all good, still equally strong effect of dimorphism on male bias
-post_m4c<- posterior_samples(m4c)
-save(post_m4c, file="post_m4c.robj")
+plot(m5) # good convergence, chains overlapping and stationary; some extreme values for sd's
+summary(m5) # all Rhat 1, ESS >1000
+# no effect of dimorphism, philopatry
+
+# extract samples and save for post-processing
+post_m5<- posterior_samples(m5)
+save(post_m5, file="post_m5.robj")
 
 
+## robustness checks: each predictor on its own
+m5a<- brm(m_coalitions ~ SexDim.z + (1|Genus_species), data = d, family = bernoulli(), cov_ranef = list(Genus_species = A.cons), 
+         prior = prior.m4, chains = 4, cores = 4, iter = 4000, warmup = 2000, control = list(adapt_delta = 0.999, max_treedepth = 15, stepsize = 0.01))
+# no divergent transitions
+plot(m5a)
+summary(m5a)
+# all good, weak association
+post_m5a<- posterior_samples(m5a)
+save(post_m5a, file="post_m5a.robj")
 
+m5b<- brm(m_coalitions ~ m_philopatry + (1|Genus_species), data = d, family = bernoulli(), cov_ranef = list(Genus_species = A.cons), 
+          prior = prior.m4, chains = 4, cores = 4, iter = 4000, warmup = 2000, control = list(adapt_delta = 0.999, max_treedepth = 15, stepsize = 0.01))
+# no divergent transitions
+plot(m5b)
+summary(m5b)
+# all good, no strong effects
+post_m5b<- posterior_samples(m5b)
+save(post_m5b, file="post_m5b.robj")
