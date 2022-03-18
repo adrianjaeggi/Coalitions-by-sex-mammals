@@ -2,16 +2,16 @@
 setwd("//files.iem.uzh.ch/Data/Institute/Human_Ecology/ajaegg/Private/My Documents/GitHub/sex-bias-cooperation")
 
 ## read excel file
-d<- readxl::read_xlsx("Sex bias in intragroup coalitions across mammals_2-11-22_PM.xlsx", sheet = 1)
+d<- readxl::read_xlsx("Sex bias in intragroup coalitions across mammals_3-5-22.xlsx", sheet = 1)
 
 # select variables to be used
-d<- d[,c("Genus_species", "Order", "Philopatry", "SexComposition", "Sex_Dim", "Food_resource_defendable", "Within-Conflict_FormationBySex_zero_center")]
+d<- d[,c("Genus_species", "Order", "Philopatry", "SexComposition", "Sex_Dim", "Food_resource_defendable", "Within-Conflict_zero_center")]
 
 # rename and recode coalitions
 colnames(d)[7]<- "coalitions"
-d$coalitions[d$coalitions=="-1"]<- "Males"
-d$coalitions[d$coalitions=="0"]<- "Both"
-d$coalitions[d$coalitions=="1"]<- "Females"
+d$coalitions[d$coalitions=="-1"]<- "Male-biased"
+d$coalitions[d$coalitions=="0"]<- "Unbiased"
+d$coalitions[d$coalitions=="1"]<- "Female-biased"
 d$coalitions<- as.factor(d$coalitions)
 
 # remove species with missing data on coalitions
@@ -43,11 +43,11 @@ setdiff(d$Genus_species, trees[[1]]$tip.label)
 write.csv(d, "sexbiascoalitions.csv", row.names = FALSE)
 
 ## drop unused species
-trees.mov<- trees
+trees.coal<- trees
 for(i in 1:100){
-  trees.mov[[i]]<- drop.tip(trees.mov[[i]], setdiff(trees.mov[[i]]$tip.label, d$Genus_species))
+  trees.coal[[i]]<- drop.tip(trees.coal[[i]], setdiff(trees.coal[[i]]$tip.label, d$Genus_species))
 }
 
-write.tree(trees.mov, "TreeBlockSexBiasCooperation.tre")
+write.tree(trees.coal, "TreeBlockSexBiasCooperation.tre")
 
 
