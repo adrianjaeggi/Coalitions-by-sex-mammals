@@ -11,11 +11,11 @@ options(mc.cores = parallel::detectCores())
 
 
 ## set working directory
-setwd("//files.iem.uzh.ch/Data/Institute/Human_Ecology/ajaegg/Private/My Documents/GitHub/sex-bias-cooperation")
+setwd("//files.iem.uzh.ch/Data/Institute/Human_Ecology/ajaegg/Private/My Documents/GitHub/Coalitions-by-sex-mammals")
 
 ## read files
 d<- read.csv("sexbiascoalitions.csv", header=TRUE)
-trees<- read.tree("TreeBlockSexBiasCooperation.tre")
+trees<- read.nexus("TreeBlockSexBiasCooperation.nex")
 
 # convert trees to covariance matrix (see https://cran.r-project.org/web/packages/brms/vignettes/brms_phylogenetics.html)
 A<- list() 
