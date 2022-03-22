@@ -39,7 +39,7 @@ prior.m1<- c(
   prior(normal(0,1), "Intercept", dpar="muFemales"), # favors moderate probabilities, penalizes extremes (near 0 or 1)
   prior(normal(0,1), "Intercept", dpar="muMales"),
   prior(exponential(1), "sd", dpar="muFemales"), 
-  prior(expontential(1), "sd", dpar="muMales")
+  prior(exponential(1), "sd", dpar="muMales")
 )
 
 m1<- brm(coalitions ~ 1 + (1|Genus_species), data = d, family = categorical(), cov_ranef = list(Genus_species = A.cons), 
@@ -62,7 +62,7 @@ prior.m2<- c(
   prior(normal(0,1), "Intercept", dpar="muMales"),
   prior(normal(0,0.5), "b", coef = "SexCompositionsegregated", dpar="muFemales"),
   prior(normal(0,0.5), "b", coef = "SexCompositionsegregated", dpar="muMales"),
-  prior(expontential(1), "sd", dpar="muFemales"), 
+  prior(exponential(1), "sd", dpar="muFemales"), 
   prior(exponential(1), "sd", dpar="muMales")
 )
 
