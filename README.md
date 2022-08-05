@@ -2,9 +2,7 @@ This repository contains all the data, code and markdown to reproduce the analys
 'Sex differences in cooperative coalitions: A mammalian perspective'
 by Jennifer Smith, Adrian Jaeggi, Rose Holmes, and Joan Silk, published in the Philosophical Transactions of the Royal Society B. 
 
-Note that two versions of the analyses were done, one using a consensus phylogeny - code: 1_Main_models.R - and one using a sample of 100 phylogenies - code: 2_Main_models_looped.R
-The former was used for the initial submission of the paper due to time constraints, the latter for the final published version. 
-If you'd like access to the saved posterior samples - which were too large to push - please contact me (Adrian Jaeggi, adrian.jaeggi@iem.uzh.ch) directly.
+Note that two versions of the analyses were done, one using a consensus phylogeny - code: 1_Main_models.R - and one using a sample of 100 phylogenies - code: 2_Main_models_looped.R. The former was used for the initial submission of the paper due to time constraints, the latter for the final published version. The results did not differ. If you'd like access to the saved posterior samples - which were too large to push - please contact me (Adrian Jaeggi, adrian.jaeggi@iem.uzh.ch) directly.
 
 List of files and explanation:
 
