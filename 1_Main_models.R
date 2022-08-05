@@ -28,7 +28,7 @@ for(i in 1:100){
 cons.tree<- consensus.edges(trees)
 A.cons<- vcv.phylo(cons.tree)
 
-d$coalitions<- relevel(as.factor(d$coalitions), ref="Both")
+
 
 
 
@@ -158,7 +158,7 @@ save(post_m4b, file="post_m4b.robj")
 ### Model 5: Male coalitions ~ Dimorphism, Philopatry ###
 
 # transform predictors
-d$SexDim.z<- (d$Sex_Dim-1)/sd(d$Sex_Dim) # mean = monomorphic, units = SD
+d$SexDim.c<- d$Sex_Dim-1 # mean = monomorphic
 d$m_philopatry<- 1
 d$m_philopatry[d$Philopatry=="N" | d$Philopatry=="F"]<- 0
 
@@ -172,7 +172,7 @@ table(d$m_coalitions, d$m_philopatry)
 d$m_philopatry<- as.factor(d$m_philopatry)
 
 # same prior as for m4
-m5<- brm(m_coalitions ~ SexDim.z + m_philopatry + (1|Genus_species), data = d, family = bernoulli(), cov_ranef = list(Genus_species = A.cons), 
+m5<- brm(m_coalitions ~ SexDim.c + m_philopatry + (1|Genus_species), data = d, family = bernoulli(), cov_ranef = list(Genus_species = A.cons), 
          prior = prior.m4, chains = 4, cores = 4, iter = 4000, warmup = 2000, control = list(adapt_delta = 0.999, max_treedepth = 15))
 # no divergent transitions
 plot(m5) # good convergence, chains overlapping and stationary
@@ -183,7 +183,7 @@ post_m5<- posterior_samples(m5)
 save(post_m5, file="post_m5.robj")
 
 ## robustness checks: each predictor on its own
-m5a<- brm(m_coalitions ~ SexDim.z + (1|Genus_species), data = d, family = bernoulli(), cov_ranef = list(Genus_species = A.cons), 
+m5a<- brm(m_coalitions ~ SexDim.c + (1|Genus_species), data = d, family = bernoulli(), cov_ranef = list(Genus_species = A.cons), 
           prior = prior.m4, chains = 4, cores = 4, iter = 4000, warmup = 2000, control = list(adapt_delta = 0.999, max_treedepth = 15))
 # no divergent transitions
 plot(m5a)
@@ -198,3 +198,42 @@ plot(m5b)
 summary(m5b)
 post_m5b<- posterior_samples(m5b)
 save(post_m5b, file="post_m5b.robj")
+
+
+
+
+##### Models 4 & 5 as ordinal #####
+
+## m4
+d$freq.females<- d$freq.females+1 # cumuative distro requires positive integers
+get_prior(freq.females ~ Food_resource_defendable + f_philopatry + (1|Genus_species), data = d, family = cumulative(), cov_ranef = list(Genus_species = A.cons))
+prior.m4<- c(
+  prior(normal(0,1), "Intercept"), 
+  prior(normal(0,0.5), "b"), 
+  prior(exponential(1), "sd"))
+
+m4.ord<- brm(freq.females ~ Food_resource_defendable + f_philopatry + (1|Genus_species), data = d, family = cumulative("logit"), cov_ranef = list(Genus_species = A.cons), 
+         prior = prior.m4, chains = 4, cores = 4, iter = 4000, warmup = 2000, control = list(adapt_delta = 0.999, max_treedepth = 15))
+plot(m4.ord)
+summary(m4.ord)
+# all good
+post_m4.ord<- posterior_samples(m4.ord)
+save(post_m4.ord, file="post_m4.ord.robj")
+
+
+## m5
+d$freq.males<- d$freq.males+1 # cumuative distro requires positive integers
+get_prior(freq.males ~ SexDim.c + m_philopatry + (1|Genus_species), data = d, family = cumulative(), cov_ranef = list(Genus_species = A.cons))
+prior.m5<- c(
+  prior(normal(0,1), "Intercept"), 
+  prior(normal(0,0.5), "b"), 
+  prior(exponential(1), "sd"))
+
+m5.ord<- brm(freq.males ~ SexDim.c + m_philopatry + (1|Genus_species), data = d, family = cumulative("logit"), cov_ranef = list(Genus_species = A.cons), 
+             prior = prior.m5, chains = 4, cores = 4, iter = 4000, warmup = 2000, control = list(adapt_delta = 0.999, max_treedepth = 15))
+plot(m5.ord)
+summary(m5.ord)
+# all good
+post_m5.ord<- posterior_samples(m5.ord)
+save(post_m5.ord, file="post_m5.ord.robj")
+

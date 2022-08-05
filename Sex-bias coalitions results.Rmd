@@ -1,7 +1,7 @@
 ---
 title: "Sex-bias coalitions results"
 author: "Adrian Jaeggi"
-date: "8 2 2022"
+date: "6 24 2022"
 output: word_document
 ---
 
@@ -14,16 +14,17 @@ knitr::opts_chunk$set(echo=FALSE, include=FALSE, message=FALSE, warning=FALSE)
 library(brms)
 library(rstan)
 library(rethinking)
-memory.limit(size=100000)
-load("post_m1.robj")
-load("post_m2.robj")
-load("post_m3.robj")
-load("post_m4.robj")
-load("post_m4a.robj")
-load("post_m4b.robj")
-load("post_m5.robj")
-load("post_m5a.robj")
-load("post_m5b.robj")
+load("post_m1_looped.robj")
+load("post_m2_looped.robj")
+load("post_m3_looped.robj")
+load("post_m4_looped.robj")
+load("post_m4a_looped.robj")
+load("post_m4b_looped.robj")
+load("post_m5_looped.robj")
+load("post_m5a_looped.robj")
+load("post_m5b_looped.robj")
+load("post_m4.ord_looped.robj")
+load("post_m5.ord_looped.robj")
 d<- read.csv("sexbiascoalitions.csv", header=TRUE)
 d$Primate<- 0
 d$Primate[d$Order=="Primata"]<- 1
@@ -32,14 +33,14 @@ d$Primate[d$Order=="Primata"]<- 1
 
 ```{r post-processing posteriors}
 # calculate phylogenetic signal for Model 1
-VarPhy.female<-post_m1$sd_Genus_species__muFemales_Intercept
-VarPhy.male<-post_m1$sd_Genus_species__muMales_Intercept
+VarPhy.female<-post_m1_looped$sd_Genus_species__muFemales_Intercept
+VarPhy.male<-post_m1_looped$sd_Genus_species__muMales_Intercept
 VarDistro<- pi^2/3
 lambda.m1<- (VarPhy.female+VarPhy.male)/(VarPhy.female+VarPhy.male+VarDistro)
 
 # compute predicted probabilities for Model 1
 {    K <- 3 #number of character states used
-  ns <- nrow(post_m1)
+  ns <- nrow(post_m1_looped)
   n <- 1
   
   softmax2 <- function(x) {
@@ -52,7 +53,7 @@ lambda.m1<- (VarPhy.female+VarPhy.male)/(VarPhy.female+VarPhy.male+VarDistro)
   for ( i in 1:n ) {
     p.m1[[i]] <- sapply( 1:K , function(k) {
       if ( k < K ) {
-        ptemp <- post_m1[,k] 
+        ptemp <- post_m1_looped[,k] 
       } else {
         ptemp <- rep(0,ns)
       }
@@ -73,13 +74,15 @@ diff.fm.m1<- p.m1[[1]][,1]-p.m1[[1]][,2]
 
 ```
 
-We used multinomial models to estimate the overall predicted probabilities of coalitions by females only, males only, or both sexes. Contrary to our first prediction, female only coalitions were not more likely than male only coalitions (Fig. 1, Model 1). In fact, the probability of female only coalitions in a typical mammal (median = `r round(pred_probs_m1,2)[1,1]`, 90% credible interval = `r round(pred_probs_m1,2)[1,2]` - `r round(pred_probs_m1,2)[1,3]`) was virtually the same as the probability of male only coalitions (`r round(pred_probs_m1,2)[2,1]`, `r round(pred_probs_m1,2)[2,2]` - `r round(pred_probs_m1,2)[2,3]`) and the most likely state was coalitions by both sexes (`r round(pred_probs_m1,2)[3,1]`, `r round(pred_probs_m1,2)[3,2]` - `r round(pred_probs_m1,2)[3,3]`). Thus, only `r round(100*sum(diff.fm.m1>0)/length(diff.fm.m1),0)`% of the posterior probability supported our prediction of female only coalitions being more likely than male only coalitions. The phylogenetic signal was moderate (median λ = `r round(median(lambda.m1),2)`, 90% CI = `r round(HPDI(lambda.m1, prob=0.90)[1],2)` - `r round(HPDI(lambda.m1, prob=0.90)[2],2)`). In sum, conditional on having any coalitions at all, the typical extant mammal is just as likely to have female only, male only, or both sex coalitions. 
+We used multinomial models to estimate the overall predicted probabilities of coalitions by females only, males only, or both sexes. Contrary to our first prediction, female only coalitions were not more likely than male only coalitions (Fig. 1, Model 1). In fact, the probability of female only coalitions in a typical mammal (median = `r round(pred_probs_m1,2)[1,1]`, 90% credible interval = `r round(pred_probs_m1,2)[1,2]` - `r round(pred_probs_m1,2)[1,3]`) was lower than the probability of male only coalitions (`r round(pred_probs_m1,2)[2,1]`, `r round(pred_probs_m1,2)[2,2]` - `r round(pred_probs_m1,2)[2,3]`) and the most likely state was coalitions by both sexes (`r round(pred_probs_m1,2)[3,1]`, `r round(pred_probs_m1,2)[3,2]` - `r round(pred_probs_m1,2)[3,3]`). Thus, only `r round(100*sum(diff.fm.m1>0)/length(diff.fm.m1),0)`% of the posterior probability supported our prediction of female only coalitions being more likely than male only coalitions. The phylogenetic signal was moderate (median λ = `r round(median(lambda.m1),2)`, 90% CI = `r round(HPDI(lambda.m1, prob=0.90)[1],2)` - `r round(HPDI(lambda.m1, prob=0.90)[2],2)`). In sum, conditional on having any coalitions at all, the typical extant mammal is just as likely to have female only, male only, or both sex coalitions. 
 
-This general pattern did not change appreciably when comparing species living in mixed-sex groups (n = `r length(d$SexComposition[d$SexComposition=="mixed"])` species) with sex-segregated ones (n = `r length(d$SexComposition[d$SexComposition=="segregated"])` species; Model 2), or primates (n= `r length(d$Primate[d$Primate==1])` species) with non-primates (n= `r length(d$Primate[d$Primate==0])` species; Model 3). Specifically, the odds of female only coalitions and male only coalitions were essentially the same in sex-segregated species compared to mixed-sex species (females only: median odds ratio = `r round(median(exp(post_m2$b_muFemales_SexCompositionsegregated)),2)`, 90% CI = `r round(HPDI(exp(post_m2$b_muFemales_SexCompositionsegregated), prob=0.90)[1],2)` - `r round(HPDI(exp(post_m2$b_muFemales_SexCompositionsegregated), prob=0.90)[2],2)`, probability OR>1 = `r round(100*sum(post_m2$b_muFemales_SexCompositionsegregated>0)/nrow(post_m2),0)`%; males only: median OR = `r round(median(exp(post_m2$b_muMales_SexCompositionsegregated)),2)`, 90% CI = `r round(HPDI(exp(post_m2$b_muMales_SexCompositionsegregated), prob=0.90)[1],2)` - `r round(HPDI(exp(post_m2$b_muMales_SexCompositionsegregated), prob=0.90)[2],2)`, probability OR>1 = `r round(100*sum(post_m2$b_muMales_SexCompositionsegregated>0)/nrow(post_m2),0)`%) or primates compared to non-primates (females only: median odds ratio = `r round(median(exp(post_m3$b_muFemales_Primate)),2)`, 90% CI = `r round(HPDI(exp(post_m3$b_muFemales_Primate), prob=0.90)[1],2)` - `r round(HPDI(exp(post_m3$b_muFemales_Primate), prob=0.90)[2],2)`, probability OR>1 = `r round(100*sum(post_m3$b_muFemales_Primate>0)/nrow(post_m3),0)`%; males only: median OR = `r round(median(exp(post_m3$b_muMales_Primate)),2)`, 90% CI = `r round(HPDI(exp(post_m3$b_muMales_Primate), prob=0.90)[1],2)` - `r round(HPDI(exp(post_m3$b_muMales_Primate), prob=0.90)[2],2)`, probability OR>1 = `r round(100*sum(post_m3$b_muMales_Primate>0)/nrow(post_m3),0)`%). We therefore did not stratify our subsequent analyses by these variables.
+This general pattern did not change appreciably when comparing species living in mixed-sex groups (n = `r length(d$SexComposition[d$SexComposition=="mixed"])` species) with sex-segregated ones (n = `r length(d$SexComposition[d$SexComposition=="segregated"])` species; Model 2), or primates (n= `r length(d$Primate[d$Primate==1])` species) with non-primates (n= `r length(d$Primate[d$Primate==0])` species; Model 3). Specifically, the odds of female only coalitions and male only coalitions were essentially the same in sex-segregated species compared to mixed-sex species (females only: median odds ratio = `r round(median(exp(post_m2_looped$b_muFemales_SexCompositionsegregated)),2)`, 90% CI = `r round(HPDI(exp(post_m2_looped$b_muFemales_SexCompositionsegregated), prob=0.90)[1],2)` - `r round(HPDI(exp(post_m2_looped$b_muFemales_SexCompositionsegregated), prob=0.90)[2],2)`, probability OR>1 = `r round(100*sum(post_m2_looped$b_muFemales_SexCompositionsegregated>0)/nrow(post_m2_looped),0)`%; males only: median OR = `r round(median(exp(post_m2_looped$b_muMales_SexCompositionsegregated)),2)`, 90% CI = `r round(HPDI(exp(post_m2_looped$b_muMales_SexCompositionsegregated), prob=0.90)[1],2)` - `r round(HPDI(exp(post_m2_looped$b_muMales_SexCompositionsegregated), prob=0.90)[2],2)`, probability OR>1 = `r round(100*sum(post_m2_looped$b_muMales_SexCompositionsegregated>0)/nrow(post_m2_looped),0)`%) or primates compared to non-primates (females only: median odds ratio = `r round(median(exp(post_m3_looped$b_muFemales_Primate)),2)`, 90% CI = `r round(HPDI(exp(post_m3_looped$b_muFemales_Primate), prob=0.90)[1],2)` - `r round(HPDI(exp(post_m3_looped$b_muFemales_Primate), prob=0.90)[2],2)`, probability OR>1 = `r round(100*sum(post_m3_looped$b_muFemales_Primate>0)/nrow(post_m3_looped),0)`%; males only: median OR = `r round(median(exp(post_m3_looped$b_muMales_Primate)),2)`, 90% CI = `r round(HPDI(exp(post_m3_looped$b_muMales_Primate), prob=0.90)[1],2)` - `r round(HPDI(exp(post_m3_looped$b_muMales_Primate), prob=0.90)[2],2)`, probability OR>1 = `r round(100*sum(post_m3_looped$b_muMales_Primate>0)/nrow(post_m3_looped),0)`%). We therefore did not stratify our subsequent analyses by these variables.
 
 To test socio-ecological predictions about female coalitions, we combined the three categories "females only", "males only" and "both sexes" into a binary variable for the presence ("females only" or "both sexes") or absence ("males only") of female coalitions; philopatry was also re-coded as a binary variable indicating presence (females or both sexes philopatric) or absence (males or neither sex philopatric) of female philopatry. To test predictions about male coalitions, we analogously re-coded male coalitions as present ("males only" or "both sexes") or absent ("females only") and male philopatry as present (males or both sexes philopatric) or absent (females or neither sex philopatric). We then ran binomial models on the presence of female coalitions (Model 4), including food defensibility (yes/no) and female philopatry (yes/no) as predictors, and on the presence of male coalitions (Model 5), including sexual dimorphism and male philopatry (yes/no) as predictors. As a robustness check, we also modeled each of these competing causes on its own. 
 
-The probability of female coalitions was not higher in species with defensible food resources compared to species with non-defensible food resources (OR = `r round(median(exp(post_m4$b_Food_resource_defendable)),2)`, 90% CI = `r round(HPDI(exp(post_m4$b_Food_resource_defendable), prob=0.90)[1],2)` - `r round(HPDI(exp(post_m4$b_Food_resource_defendable), prob=0.90)[2],2)`, probability OR>1 = `r round(100*sum(post_m4$b_Food_resource_defendable>0)/nrow(post_m4),0)`%), or in species with female philopatry compared to female dispersal (OR = `r round(median(exp(post_m4$b_f_philopatry)),2)`, 90% CI = `r round(HPDI(exp(post_m4$b_f_philopatry), prob=0.90)[1],2)` - `r round(HPDI(exp(post_m4$b_f_philopatry), prob=0.90)[2],2)`, probability OR>1 = `r round(100*sum(post_m4$b_f_philopatry>0)/nrow(post_m4),0)`%). Likewise, the probability of male coalitions was not higher in sexually dimorphic species (OR for 1SD change in dimorphism = `r round(median(exp(post_m5$b_SexDim.z)),2)`, 90% CI = `r round(HPDI(exp(post_m5$b_SexDim.z), prob=0.90)[1],2)` - `r round(HPDI(exp(post_m5$b_SexDim.z), prob=0.90)[2],2)`, probability OR>1 = `r round(100*sum(post_m5$b_SexDim.z>0)/nrow(post_m4),0)`%), and virtually the same whether males were philopatric or dispersed (OR = `r round(median(exp(post_m5$b_m_philopatry)),2)`, 90% CI = `r round(HPDI(exp(post_m5$b_SexDim.z), prob=0.90)[1],2)` - `r round(HPDI(exp(post_m5$b_m_philopatry), prob=0.90)[2],2)`, probability OR>1 = `r round(100*sum(post_m5$b_m_philopatry>0)/nrow(post_m4),0)`%). These inferences did not change when considering each predictor in a model on its own (see Supplement). Thus, the probability of female or male coalitions was not strongly associated with our predictors.
+The probability of female coalitions was not higher in species with defensible food resources compared to species with non-defensible food resources (OR = `r round(median(exp(post_m4_looped$b_Food_resource_defendable)),2)`, 90% CI = `r round(HPDI(exp(post_m4_looped$b_Food_resource_defendable), prob=0.90)[1],2)` - `r round(HPDI(exp(post_m4_looped$b_Food_resource_defendable), prob=0.90)[2],2)`, probability OR>1 = `r round(100*sum(post_m4_looped$b_Food_resource_defendable>0)/nrow(post_m4_looped),0)`%), or in species with female philopatry compared to female dispersal (OR = `r round(median(exp(post_m4_looped$b_f_philopatry)),2)`, 90% CI = `r round(HPDI(exp(post_m4_looped$b_f_philopatry), prob=0.90)[1],2)` - `r round(HPDI(exp(post_m4_looped$b_f_philopatry), prob=0.90)[2],2)`, probability OR>1 = `r round(100*sum(post_m4_looped$b_f_philopatry>0)/nrow(post_m4_looped),0)`%). Likewise, the probability of male coalitions was not higher in sexually dimorphic species (OR for 1 unit change in dimorphism = `r round(median(exp(post_m5_looped$b_SexDim.c)),2)`, 90% CI = `r round(HPDI(exp(post_m5_looped$b_SexDim.c), prob=0.90)[1],2)` - `r round(HPDI(exp(post_m5_looped$b_SexDim.c), prob=0.90)[2],2)`, probability OR>1 = `r round(100*sum(post_m5_looped$b_SexDim.c>0)/nrow(post_m5_looped),0)`%), and virtually the same whether males were philopatric or dispersed (OR = `r round(median(exp(post_m5_looped$b_m_philopatry)),2)`, 90% CI = `r round(HPDI(exp(post_m5_looped$b_m_philopatry), prob=0.90)[1],2)` - `r round(HPDI(exp(post_m5_looped$b_m_philopatry), prob=0.90)[2],2)`, probability OR>1 = `r round(100*sum(post_m5_looped$b_m_philopatry>0)/nrow(post_m5_looped),0)`%). These inferences did not change when considering each predictor in a model on its own (see Supplement). Thus, the probability of female or male coalitions was not strongly associated with our predictors.
+
+Finally, we tested socio-ecological predictors on coalition frequency - rather than just presence/absence - by analyzing our ordinal scale (absent, present, common) using cumulative logit distributions and the same predictors as Models 4 & 5. The frequency of female coalitions was not higher in species with defensible food resources compared to species with non-defensible food resources (OR = `r round(median(exp(post_m4.ord_looped$b_Food_resource_defendable)),2)`, 90% CI = `r round(HPDI(exp(post_m4.ord_looped$b_Food_resource_defendable), prob=0.90)[1],2)` - `r round(HPDI(exp(post_m4.ord_looped$b_Food_resource_defendable), prob=0.90)[2],2)`, probability OR>1 = `r round(100*sum(post_m4.ord_looped$b_Food_resource_defendable>0)/nrow(post_m4.ord_looped),0)`%), though it was somewhat higher in species with female philopatry compared to female dispersal (OR = `r round(median(exp(post_m4.ord_looped$b_f_philopatry)),2)`, 90% CI = `r round(HPDI(exp(post_m4.ord_looped$b_f_philopatry), prob=0.90)[1],2)` - `r round(HPDI(exp(post_m4.ord_looped$b_f_philopatry), prob=0.90)[2],2)`, probability OR>1 = `r round(100*sum(post_m4.ord_looped$b_f_philopatry>0)/nrow(post_m4.ord_looped),0)`%). Likewise, the frequency of male coalitions was not higher in sexually dimorphic species (OR for 1 unit change in dimorphism = `r round(median(exp(post_m5.ord_looped$b_SexDim.c)),2)`, 90% CI = `r round(HPDI(exp(post_m5.ord_looped$b_SexDim.c), prob=0.90)[1],2)` - `r round(HPDI(exp(post_m5.ord_looped$b_SexDim.c), prob=0.90)[2],2)`, probability OR>1 = `r round(100*sum(post_m5.ord_looped$b_SexDim.c>0)/nrow(post_m5.ord_looped),0)`%), but somewhat higher in species with male philopatry compared to male dispersal (OR = `r round(median(exp(post_m5.ord_looped$b_m_philopatry)),2)`, 90% CI = `r round(HPDI(exp(post_m5.ord_looped$b_m_philopatry), prob=0.90)[1],2)` - `r round(HPDI(exp(post_m5.ord_looped$b_m_philopatry), prob=0.90)[2],2)`, probability OR>1 = `r round(100*sum(post_m5.ord_looped$b_m_philopatry>0)/nrow(post_m5.ord_looped),0)`%). 
 
 ```{r Figure X, eval=FALSE}
 ## figure with phylogeny and overall distributions of coalitions by sex
@@ -92,7 +95,6 @@ col.both<- MetPalettes$Lakota[[1]][3]
 
 library(ape)
 library(phytools)
-library(wesanderson)
 library(TreeTools)
 library(rethinking)
 
@@ -111,7 +113,7 @@ t2.coal<- t.coal[ order(match(rownames(t.coal), cons.tree$tip.label)), ]
 tiff("Figure X.tif", compression="lzw", height=6.0, width=6.0, units="cm", res=600, pointsize=5)
 
 # plot trees
-densityTree(trees,type="cladogram", show.axis=FALSE, fsize=0.5, offset=0.25, lwd=1, col="black")
+densityTree(trees,type="cladogram", show.axis=FALSE, fsize=0.5, offset=0.25, lwd=1, col="black") 
 
 ## add colored boxes for character states to tree
 for(i in 1:nrow(t2.coal)){if(t2.coal[i,"Females"]>0) points(x=-1, y=0+i, pch=15, cex=0.7, col=col.female)}
@@ -121,7 +123,7 @@ for(i in 1:nrow(t2.coal)){if(t2.coal[i,"Both"]>0) points(x=-1, y=0+i, pch=15, ce
 ## create inset plot
 par(fig = c(0.1, 0.5, 0.1, 0.45), mar = c(2, 2, 3, 2), new = T)
 
-dens(p.m1[[1]][,1], xlab="Predicted probability", ylab="Density", main="", col="white", ylim=c(0,2.5), xlim=c(0,1))
+dens(p.m1[[1]][,1], xlab="Predicted probability", ylab="Density", main="", col="white", ylim=c(0,3.5), xlim=c(0,1))
 polygon(density(p.m1[[1]][,1]), col=adjustcolor(col.female, alpha.f=0.5))
 polygon(density(p.m1[[1]][,2]), col=adjustcolor(col.male, alpha.f=0.5))
 polygon(density(p.m1[[1]][,3]), col=adjustcolor(col.both, alpha.f=0.5))
@@ -130,7 +132,7 @@ par(fig = c(0,1,0,1), new=FALSE)
 
 # add legend
 par(xpd=NA)
-legend(x=-0.1, y=1, fill=c(col.female,col.male,col.both), border=NA, legend=c("Females only", "Males only", "Both sexes"), bty="n")
+legend(x=-0.1, y=1.4, fill=c(col.female,col.male,col.both), border=NA, legend=c("Females only", "Males only", "Both sexes"), bty="n")
 
 dev.off()
 

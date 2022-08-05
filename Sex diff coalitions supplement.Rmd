@@ -1,6 +1,6 @@
 ---
-title: "Sex differences in cooperation: A mammalian perspective"
-subtitle: "Supplementary Materials"
+title: "Sex differences in cooperative coalitions: A mammalian perspective"
+subtitle: "Supplementary Materials: Full model summaries"
 author: "Jennifer E. Smith, Adrian V. Jaeggi, Rose Holmes, Joan B. Silk"
 toc: true
 output:
@@ -10,42 +10,43 @@ output:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo=FALSE, message=FALSE, warning=FALSE)
+memory.limit(size = 1e6)
 ```
 
 \newpage
-# Supplemental Results
-
 ## Model 1: No predictors
-Full summary of Model 1, estimating the likelihood of female-only coalitions, male-only coalitions, and coalitions by both sexes, without any predictors. Note that coalitions by both sexes is the reference level, hence we are only estimating the probabilities of female only and male only coalitions. In order to differentiate coefficients of the female coalitions and male coalitions linear models, we here put the corresponding outcome in parentheses, e.g. Intercept (female bias). All estimates are on the log-odds scale and summarized by the median and 90% credible interval ("lwr90CI" - "upr90CI") of the posterior distribution.
+Full summary of Model 1, estimating the likelihood of female-only coalitions, male-only coalitions, and coalitions by both sexes, without any predictors. Note that coalitions by both sexes is the reference level, hence we are only estimating the probabilities of female only and male only coalitions. In order to differentiate coefficients of the female coalitions and male coalitions linear models, we here put the corresponding outcome in parentheses, e.g. Intercept (females). All estimates are on the log-odds scale and summarized by the median and 90% credible interval ("lwr90CI" - "upr90CI") of the posterior distribution.
 
 
 **Table S1**: Predicting the probability of coalition formation by sex (Model 1)
 ```{r table s1}
 library(knitr)
 library(rethinking)
-load("post_m1.robj")
-s1<- data.frame(Parameter = c("Intercept (female bias)", "Intercept (male bias)", "Phylo SD (female bias)", "Phylo SD (male bias)"), Mean = c(round(median(post_m1$b_muFemales_Intercept),2), round(median(post_m1$b_muMales_Intercept),2), round(median(post_m1$sd_Genus_species__muFemales_Intercept),2), round(median(post_m1$sd_Genus_species__muMales_Intercept),2)), lwr90CI = c(round(HPDI(post_m1$b_muFemales_Intercept, prob=0.90)[1],2), round(HPDI(post_m1$b_muMales_Intercept, prob=0.90)[1],2), round(HPDI(post_m1$sd_Genus_species__muFemales_Intercept, prob=0.90)[1],2), round(HPDI(post_m1$sd_Genus_species__muMales_Intercept, prob=0.90)[1],2)), upr90CI = c(round(HPDI(post_m1$b_muFemales_Intercept, prob=0.90)[2],2), round(HPDI(post_m1$b_muMales_Intercept, prob=0.90)[2],2), round(HPDI(post_m1$sd_Genus_species__muFemales_Intercept, prob=0.90)[2],2), round(HPDI(post_m1$sd_Genus_species__muMales_Intercept, prob=0.90)[2],2)))
+
+load("post_m1_looped.robj")
+s1<- data.frame(Parameter = c("Intercept (females)", "Intercept (males)", "Phylo SD (females)", "Phylo SD (males)"), Mean = c(round(median(post_m1_looped$b_muFemales_Intercept),2), round(median(post_m1_looped$b_muMales_Intercept),2), round(median(post_m1_looped$sd_Genus_species__muFemales_Intercept),2), round(median(post_m1_looped$sd_Genus_species__muMales_Intercept),2)), lwr90CI = c(round(HPDI(post_m1_looped$b_muFemales_Intercept, prob=0.90)[1],2), round(HPDI(post_m1_looped$b_muMales_Intercept, prob=0.90)[1],2), round(HPDI(post_m1_looped$sd_Genus_species__muFemales_Intercept, prob=0.90)[1],2), round(HPDI(post_m1_looped$sd_Genus_species__muMales_Intercept, prob=0.90)[1],2)), upr90CI = c(round(HPDI(post_m1_looped$b_muFemales_Intercept, prob=0.90)[2],2), round(HPDI(post_m1_looped$b_muMales_Intercept, prob=0.90)[2],2), round(HPDI(post_m1_looped$sd_Genus_species__muFemales_Intercept, prob=0.90)[2],2), round(HPDI(post_m1_looped$sd_Genus_species__muMales_Intercept, prob=0.90)[2],2)))
 kable(s1)
 ```
+\newpage
 ## Model 2: Mixed-sex vs sex-segregated
-Full summary of Model 2, estimating the likelihood of female-only coalitions, male-only coalitions, and coalitions by both sexes in mixed-sex vs sex-segregated species. Note that coalitions by both sexes is the reference level, hence we are only estimating the probabilities of female only and male only coalitions. Mixed-sex is the reference level for the predictor, hence coefficients for sex-segregated species give the change in probability when going from mixed-sex to sex-segregation. In order to differentiate coefficients of the female coalitions and male coalitions linear models, we here put the corresponding outcome in parentheses, e.g. Intercept (female bias). All estimates are on the log-odds scale and summarized by the median and 90% credible interval ("lwr90CI" - "upr90CI") of the posterior distribution.
+Full summary of Model 2, estimating the likelihood of female-only coalitions, male-only coalitions, and coalitions by both sexes in mixed-sex vs sex-segregated species. Note that coalitions by both sexes is the reference level, hence we are only estimating the probabilities of female only and male only coalitions. Mixed-sex is the reference level for the predictor, hence coefficients for sex-segregated species give the change in probability when going from mixed-sex to sex-segregation. In order to differentiate coefficients of the female coalitions and male coalitions linear models, we here put the corresponding outcome in parentheses, e.g. Intercept (females). All estimates are on the log-odds scale and summarized by the median and 90% credible interval ("lwr90CI" - "upr90CI") of the posterior distribution.
 
 
 **Table S2**: Coalition formation in mixed-sex vs sex-segregated species (Model 2)
 ```{r table s2}
-load("post_m2.robj")
-s2<- data.frame(Parameter = c("Intercept (female bias)", "Intercept (male bias)", "Sex-segregated (female bias)", "Sex-segregated (male bias)", "Phylo SD (female bias)", "Phylo SD (male bias)"), Mean = c(round(median(post_m2$b_muFemales_Intercept),2), round(median(post_m2$b_muMales_Intercept),2), round(median(post_m2$b_muFemales_SexCompositionsegregated),2), round(median(post_m2$b_muMales_SexCompositionsegregated),2),round(median(post_m2$sd_Genus_species__muFemales_Intercept),2), round(median(post_m2$sd_Genus_species__muMales_Intercept),2)), lwr90CI = c(round(HPDI(post_m2$b_muFemales_Intercept, prob=0.90)[1],2), round(HPDI(post_m2$b_muMales_Intercept, prob=0.90)[1],2),round(HPDI(post_m2$b_muFemales_SexCompositionsegregated, prob=0.90)[1],2), round(HPDI(post_m2$b_muMales_SexCompositionsegregated, prob=0.90)[1],2), round(HPDI(post_m2$sd_Genus_species__muFemales_Intercept, prob=0.90)[1],2), round(HPDI(post_m2$sd_Genus_species__muMales_Intercept, prob=0.90)[1],2)), upr90CI = c(round(HPDI(post_m2$b_muFemales_Intercept, prob=0.90)[2],2), round(HPDI(post_m2$b_muMales_Intercept, prob=0.90)[2],2),round(HPDI(post_m2$b_muFemales_SexCompositionsegregated, prob=0.90)[2],2), round(HPDI(post_m2$b_muMales_SexCompositionsegregated, prob=0.90)[2],2), round(HPDI(post_m2$sd_Genus_species__muFemales_Intercept, prob=0.90)[2],2), round(HPDI(post_m2$sd_Genus_species__muMales_Intercept, prob=0.90)[2],2)))
+load("post_m2_looped.robj")
+s2<- data.frame(Parameter = c("Intercept (females)", "Intercept (males)", "Sex-segregated (females)", "Sex-segregated (males)", "Phylo SD (females)", "Phylo SD (males)"), Mean = c(round(median(post_m2_looped$b_muFemales_Intercept),2), round(median(post_m2_looped$b_muMales_Intercept),2), round(median(post_m2_looped$b_muFemales_SexCompositionsegregated),2), round(median(post_m2_looped$b_muMales_SexCompositionsegregated),2),round(median(post_m2_looped$sd_Genus_species__muFemales_Intercept),2), round(median(post_m2_looped$sd_Genus_species__muMales_Intercept),2)), lwr90CI = c(round(HPDI(post_m2_looped$b_muFemales_Intercept, prob=0.90)[1],2), round(HPDI(post_m2_looped$b_muMales_Intercept, prob=0.90)[1],2),round(HPDI(post_m2_looped$b_muFemales_SexCompositionsegregated, prob=0.90)[1],2), round(HPDI(post_m2_looped$b_muMales_SexCompositionsegregated, prob=0.90)[1],2), round(HPDI(post_m2_looped$sd_Genus_species__muFemales_Intercept, prob=0.90)[1],2), round(HPDI(post_m2_looped$sd_Genus_species__muMales_Intercept, prob=0.90)[1],2)), upr90CI = c(round(HPDI(post_m2_looped$b_muFemales_Intercept, prob=0.90)[2],2), round(HPDI(post_m2_looped$b_muMales_Intercept, prob=0.90)[2],2),round(HPDI(post_m2_looped$b_muFemales_SexCompositionsegregated, prob=0.90)[2],2), round(HPDI(post_m2_looped$b_muMales_SexCompositionsegregated, prob=0.90)[2],2), round(HPDI(post_m2_looped$sd_Genus_species__muFemales_Intercept, prob=0.90)[2],2), round(HPDI(post_m2_looped$sd_Genus_species__muMales_Intercept, prob=0.90)[2],2)))
 kable(s2)
 ```
 \newpage
 ## Model 3: Primates vs non-primates
-Full summary of Model 3, estimating the likelihood of female-only coalitions, male-only coalitions, and coalitions by both sexes in primates vs non-primates. Note that coalitions by both sexes is the reference level, hence we are only estimating the probabilities of female only and male only coalitions. Non-primate is the reference level for the predictor, hence coefficients for primates give the change in probability when going from non-primate to primate. In order to differentiate coefficients of the female coalitions and male coalitions linear models, we here put the corresponding outcome in parentheses, e.g. Intercept (female bias). All estimates are on the log-odds scale and summarized by the median and 90% credible interval ("lwr90CI" - "upr90CI") of the posterior distribution.
+Full summary of Model 3, estimating the likelihood of female-only coalitions, male-only coalitions, and coalitions by both sexes in primates vs non-primates. Note that coalitions by both sexes is the reference level, hence we are only estimating the probabilities of female only and male only coalitions. Non-primate is the reference level for the predictor, hence coefficients for primates give the change in probability when going from non-primate to primate. In order to differentiate coefficients of the female coalitions and male coalitions linear models, we here put the corresponding outcome in parentheses, e.g. Intercept (females). All estimates are on the log-odds scale and summarized by the median and 90% credible interval ("lwr90CI" - "upr90CI") of the posterior distribution.
 
 
 **Table S3**: Coalition formation in primates vs non-primates (Model 3)
 ```{r table s3}
-load("post_m3.robj")
-s3<- data.frame(Parameter = c("Intercept (female bias)", "Intercept (male bias)", "Primate (female bias)", "Primate (male bias)", "Phylo SD (female bias)", "Phylo SD (male bias)"), Mean = c(round(median(post_m3$b_muFemales_Intercept),2), round(median(post_m3$b_muMales_Intercept),2), round(median(post_m3$b_muFemales_Primate),2), round(median(post_m3$b_muMales_Primate),2),round(median(post_m3$sd_Genus_species__muFemales_Intercept),2), round(median(post_m3$sd_Genus_species__muMales_Intercept),2)), lwr90CI = c(round(HPDI(post_m3$b_muFemales_Intercept, prob=0.90)[1],2), round(HPDI(post_m3$b_muMales_Intercept, prob=0.90)[1],2),round(HPDI(post_m3$b_muFemales_Primate, prob=0.90)[1],2), round(HPDI(post_m3$b_muMales_Primate, prob=0.90)[1],2), round(HPDI(post_m3$sd_Genus_species__muFemales_Intercept, prob=0.90)[1],2), round(HPDI(post_m3$sd_Genus_species__muMales_Intercept, prob=0.90)[1],2)), upr90CI = c(round(HPDI(post_m3$b_muFemales_Intercept, prob=0.90)[2],2), round(HPDI(post_m3$b_muMales_Intercept, prob=0.90)[2],2),round(HPDI(post_m3$b_muFemales_Primate, prob=0.90)[2],2), round(HPDI(post_m3$b_muMales_Primate, prob=0.90)[2],2), round(HPDI(post_m3$sd_Genus_species__muFemales_Intercept, prob=0.90)[2],2), round(HPDI(post_m3$sd_Genus_species__muMales_Intercept, prob=0.90)[2],2)))
+load("post_m3_looped.robj")
+s3<- data.frame(Parameter = c("Intercept (females)", "Intercept (males)", "Primate (females)", "Primate (males)", "Phylo SD (females)", "Phylo SD (males)"), Mean = c(round(median(post_m3_looped$b_muFemales_Intercept),2), round(median(post_m3_looped$b_muMales_Intercept),2), round(median(post_m3_looped$b_muFemales_Primate),2), round(median(post_m3_looped$b_muMales_Primate),2),round(median(post_m3_looped$sd_Genus_species__muFemales_Intercept),2), round(median(post_m3_looped$sd_Genus_species__muMales_Intercept),2)), lwr90CI = c(round(HPDI(post_m3_looped$b_muFemales_Intercept, prob=0.90)[1],2), round(HPDI(post_m3_looped$b_muMales_Intercept, prob=0.90)[1],2),round(HPDI(post_m3_looped$b_muFemales_Primate, prob=0.90)[1],2), round(HPDI(post_m3_looped$b_muMales_Primate, prob=0.90)[1],2), round(HPDI(post_m3_looped$sd_Genus_species__muFemales_Intercept, prob=0.90)[1],2), round(HPDI(post_m3_looped$sd_Genus_species__muMales_Intercept, prob=0.90)[1],2)), upr90CI = c(round(HPDI(post_m3_looped$b_muFemales_Intercept, prob=0.90)[2],2), round(HPDI(post_m3_looped$b_muMales_Intercept, prob=0.90)[2],2),round(HPDI(post_m3_looped$b_muFemales_Primate, prob=0.90)[2],2), round(HPDI(post_m3_looped$b_muMales_Primate, prob=0.90)[2],2), round(HPDI(post_m3_looped$sd_Genus_species__muFemales_Intercept, prob=0.90)[2],2), round(HPDI(post_m3_looped$sd_Genus_species__muMales_Intercept, prob=0.90)[2],2)))
 kable(s3)
 ```
 \newpage
@@ -55,20 +56,20 @@ Full summaries of Model 4 and its robustness checks, estimating the probability 
 
 **Table S4**: Socio-ecological predictors of female coalitions (Model 4)
 ```{r table s4}
-load("post_m4.robj")
-s4<- data.frame(Parameter = c("Intercept", "Food defensible = yes", "Female philopatry = yes", "Phylo SD"), Mean = c(round(median(post_m4$b_Intercept),2), round(median(post_m4$b_Food_resource_defendable),2), round(median(post_m4$b_f_philopatry),2), round(median(post_m4$sd_Genus_species__Intercept),2)), lwr90CI = c(round(HPDI(post_m4$b_Intercept, prob=0.90)[1],2), round(HPDI(post_m4$b_Food_resource_defendable, prob=0.90)[1],2),round(HPDI(post_m4$b_f_philopatry, prob=0.90)[1],2), round(HPDI(post_m4$sd_Genus_species__Intercept, prob=0.90)[1],2)), upr90CI = c(round(HPDI(post_m4$b_Intercept, prob=0.90)[2],2), round(HPDI(post_m4$b_Food_resource_defendable, prob=0.90)[2],2),round(HPDI(post_m4$b_f_philopatry, prob=0.90)[2],2), round(HPDI(post_m4$sd_Genus_species__Intercept, prob=0.90)[2],2)))
+load("post_m4_looped.robj")
+s4<- data.frame(Parameter = c("Intercept", "Food defensible = yes", "Female philopatry = yes", "Phylo SD"), Mean = c(round(median(post_m4_looped$b_Intercept),2), round(median(post_m4_looped$b_Food_resource_defendable),2), round(median(post_m4_looped$b_f_philopatry),2), round(median(post_m4_looped$sd_Genus_species__Intercept),2)), lwr90CI = c(round(HPDI(post_m4_looped$b_Intercept, prob=0.90)[1],2), round(HPDI(post_m4_looped$b_Food_resource_defendable, prob=0.90)[1],2),round(HPDI(post_m4_looped$b_f_philopatry, prob=0.90)[1],2), round(HPDI(post_m4_looped$sd_Genus_species__Intercept, prob=0.90)[1],2)), upr90CI = c(round(HPDI(post_m4_looped$b_Intercept, prob=0.90)[2],2), round(HPDI(post_m4_looped$b_Food_resource_defendable, prob=0.90)[2],2),round(HPDI(post_m4_looped$b_f_philopatry, prob=0.90)[2],2), round(HPDI(post_m4_looped$sd_Genus_species__Intercept, prob=0.90)[2],2)))
 kable(s4)
 ```
 **Table S4.a**: Food defensibility only
 ```{r table s4a}
-load("post_m4a.robj")
-s4a<- data.frame(Parameter = c("Intercept", "Food defensible = yes", "Phylo SD"), Mean = c(round(median(post_m4a$b_Intercept),2), round(median(post_m4a$b_Food_resource_defendable),2), round(median(post_m4a$sd_Genus_species__Intercept),2)), lwr90CI = c(round(HPDI(post_m4a$b_Intercept, prob=0.90)[1],2), round(HPDI(post_m4a$b_Food_resource_defendable, prob=0.90)[1],2), round(HPDI(post_m4a$sd_Genus_species__Intercept, prob=0.90)[1],2)), upr90CI = c(round(HPDI(post_m4a$b_Intercept, prob=0.90)[2],2), round(HPDI(post_m4a$b_Food_resource_defendable, prob=0.90)[2],2), round(HPDI(post_m4a$sd_Genus_species__Intercept, prob=0.90)[2],2)))
+load("post_m4a_looped.robj")
+s4a<- data.frame(Parameter = c("Intercept", "Food defensible = yes", "Phylo SD"), Mean = c(round(median(post_m4a_looped$b_Intercept),2), round(median(post_m4a_looped$b_Food_resource_defendable),2), round(median(post_m4a_looped$sd_Genus_species__Intercept),2)), lwr90CI = c(round(HPDI(post_m4a_looped$b_Intercept, prob=0.90)[1],2), round(HPDI(post_m4a_looped$b_Food_resource_defendable, prob=0.90)[1],2), round(HPDI(post_m4a_looped$sd_Genus_species__Intercept, prob=0.90)[1],2)), upr90CI = c(round(HPDI(post_m4a_looped$b_Intercept, prob=0.90)[2],2), round(HPDI(post_m4a_looped$b_Food_resource_defendable, prob=0.90)[2],2), round(HPDI(post_m4a_looped$sd_Genus_species__Intercept, prob=0.90)[2],2)))
 kable(s4a)
 ```
 **Table S4.b**: Female philopatry only
 ```{r table s4b}
-load("post_m4b.robj")
-s4b<- data.frame(Parameter = c("Intercept", "Female philopatry = yes", "Phylo SD"), Mean = c(round(median(post_m4b$b_Intercept),2), round(median(post_m4b$b_f_philopatry),2), round(median(post_m4b$sd_Genus_species__Intercept),2)), lwr90CI = c(round(HPDI(post_m4b$b_Intercept, prob=0.90)[1],2), round(HPDI(post_m4b$b_f_philopatry, prob=0.90)[1],2), round(HPDI(post_m4b$sd_Genus_species__Intercept, prob=0.90)[1],2)), upr90CI = c(round(HPDI(post_m4b$b_Intercept, prob=0.90)[2],2), round(HPDI(post_m4b$b_f_philopatry, prob=0.90)[2],2), round(HPDI(post_m4b$sd_Genus_species__Intercept, prob=0.90)[2],2)))
+load("post_m4b_looped.robj")
+s4b<- data.frame(Parameter = c("Intercept", "Female philopatry = yes", "Phylo SD"), Mean = c(round(median(post_m4b_looped$b_Intercept),2), round(median(post_m4b_looped$b_f_philopatry),2), round(median(post_m4b_looped$sd_Genus_species__Intercept),2)), lwr90CI = c(round(HPDI(post_m4b_looped$b_Intercept, prob=0.90)[1],2), round(HPDI(post_m4b_looped$b_f_philopatry, prob=0.90)[1],2), round(HPDI(post_m4b_looped$sd_Genus_species__Intercept, prob=0.90)[1],2)), upr90CI = c(round(HPDI(post_m4b_looped$b_Intercept, prob=0.90)[2],2), round(HPDI(post_m4b_looped$b_f_philopatry, prob=0.90)[2],2), round(HPDI(post_m4b_looped$sd_Genus_species__Intercept, prob=0.90)[2],2)))
 kable(s4b)
 ```
 
@@ -79,23 +80,40 @@ Full summaries of Model 5 and its robustness checks, estimating the probability 
 
 **Table S5**: Socio-ecological predictors of male coalitions (Model 5)
 ```{r table s5}
-load("post_m5.robj")
-s5<- data.frame(Parameter = c("Intercept", "Sexual dimorphism", "Male philopatry = yes", "Phylo SD"), Mean = c(round(median(post_m5$b_Intercept),2), round(median(post_m5$b_SexDim.z),2), round(median(post_m5$b_m_philopatry),2), round(median(post_m5$sd_Genus_species__Intercept),2)), lwr90CI = c(round(HPDI(post_m5$b_Intercept, prob=0.90)[1],2), round(HPDI(post_m5$b_SexDim.z, prob=0.90)[1],2),round(HPDI(post_m5$b_m_philopatry, prob=0.90)[1],2), round(HPDI(post_m5$sd_Genus_species__Intercept, prob=0.90)[1],2)), upr90CI = c(round(HPDI(post_m5$b_Intercept, prob=0.90)[2],2), round(HPDI(post_m5$b_SexDim.z, prob=0.90)[2],2),round(HPDI(post_m5$b_m_philopatry, prob=0.90)[2],2), round(HPDI(post_m5$sd_Genus_species__Intercept, prob=0.90)[2],2)))
+load("post_m5_looped.robj")
+s5<- data.frame(Parameter = c("Intercept", "Sexual dimorphism", "Male philopatry = yes", "Phylo SD"), Mean = c(round(median(post_m5_looped$b_Intercept),2), round(median(post_m5_looped$b_SexDim.c),2), round(median(post_m5_looped$b_m_philopatry),2), round(median(post_m5_looped$sd_Genus_species__Intercept),2)), lwr90CI = c(round(HPDI(post_m5_looped$b_Intercept, prob=0.90)[1],2), round(HPDI(post_m5_looped$b_SexDim.c, prob=0.90)[1],2),round(HPDI(post_m5_looped$b_m_philopatry, prob=0.90)[1],2), round(HPDI(post_m5_looped$sd_Genus_species__Intercept, prob=0.90)[1],2)), upr90CI = c(round(HPDI(post_m5_looped$b_Intercept, prob=0.90)[2],2), round(HPDI(post_m5_looped$b_SexDim.c, prob=0.90)[2],2),round(HPDI(post_m5_looped$b_m_philopatry, prob=0.90)[2],2), round(HPDI(post_m5_looped$sd_Genus_species__Intercept, prob=0.90)[2],2)))
 kable(s5)
 ```
 **Table S5.a**: Sexual dimorphism only
 ```{r table s5a}
-load("post_m5a.robj")
-s5a<- data.frame(Parameter = c("Intercept", "Sexual dimorphism", "Phylo SD"), Mean = c(round(median(post_m5a$b_Intercept),2), round(median(post_m5a$b_SexDim.z),2), round(median(post_m5a$sd_Genus_species__Intercept),2)), lwr90CI = c(round(HPDI(post_m5a$b_Intercept, prob=0.90)[1],2), round(HPDI(post_m5a$b_SexDim.z, prob=0.90)[1],2), round(HPDI(post_m5a$sd_Genus_species__Intercept, prob=0.90)[1],2)), upr90CI = c(round(HPDI(post_m5a$b_Intercept, prob=0.90)[2],2), round(HPDI(post_m5a$b_SexDim.z, prob=0.90)[2],2), round(HPDI(post_m5a$sd_Genus_species__Intercept, prob=0.90)[2],2)))
+load("post_m5a_looped.robj")
+s5a<- data.frame(Parameter = c("Intercept", "Sexual dimorphism", "Phylo SD"), Mean = c(round(median(post_m5a_looped$b_Intercept),2), round(median(post_m5a_looped$b_SexDim.c),2), round(median(post_m5a_looped$sd_Genus_species__Intercept),2)), lwr90CI = c(round(HPDI(post_m5a_looped$b_Intercept, prob=0.90)[1],2), round(HPDI(post_m5a_looped$b_SexDim.c, prob=0.90)[1],2), round(HPDI(post_m5a_looped$sd_Genus_species__Intercept, prob=0.90)[1],2)), upr90CI = c(round(HPDI(post_m5a_looped$b_Intercept, prob=0.90)[2],2), round(HPDI(post_m5a_looped$b_SexDim.c, prob=0.90)[2],2), round(HPDI(post_m5a_looped$sd_Genus_species__Intercept, prob=0.90)[2],2)))
 kable(s5a)
 ```
 **Table S5.b**: Male philopatry only
 ```{r table s5b}
-load("post_m5b.robj")
-s5b<- data.frame(Parameter = c("Intercept", "Male philopatry = yes", "Phylo SD"), Mean = c(round(median(post_m5b$b_Intercept),2), round(median(post_m5b$b_m_philopatry),2), round(median(post_m5b$sd_Genus_species__Intercept),2)), lwr90CI = c(round(HPDI(post_m5b$b_Intercept, prob=0.90)[1],2), round(HPDI(post_m5b$b_m_philopatry, prob=0.90)[1],2), round(HPDI(post_m5b$sd_Genus_species__Intercept, prob=0.90)[1],2)), upr90CI = c(round(HPDI(post_m5b$b_Intercept, prob=0.90)[2],2), round(HPDI(post_m5b$b_m_philopatry, prob=0.90)[2],2), round(HPDI(post_m5b$sd_Genus_species__Intercept, prob=0.90)[2],2)))
+load("post_m5b_looped.robj")
+s5b<- data.frame(Parameter = c("Intercept", "Male philopatry = yes", "Phylo SD"), Mean = c(round(median(post_m5b_looped$b_Intercept),2), round(median(post_m5b_looped$b_m_philopatry),2), round(median(post_m5b_looped$sd_Genus_species__Intercept),2)), lwr90CI = c(round(HPDI(post_m5b_looped$b_Intercept, prob=0.90)[1],2), round(HPDI(post_m5b_looped$b_m_philopatry, prob=0.90)[1],2), round(HPDI(post_m5b_looped$sd_Genus_species__Intercept, prob=0.90)[1],2)), upr90CI = c(round(HPDI(post_m5b_looped$b_Intercept, prob=0.90)[2],2), round(HPDI(post_m5b_looped$b_m_philopatry, prob=0.90)[2],2), round(HPDI(post_m5b_looped$sd_Genus_species__Intercept, prob=0.90)[2],2)))
 kable(s5b)
 ```
+\newpage
+## Ordinal models: Predicting frequency of female and male coalitions
+Full summaries of the ordinal versions of Models 4 & 5, estimating the frequency of female and male coalitions as a function of the same socio-ecological predictors. Note that two intercepts are reported, reflecting the probability of coalitions being absent ("Intercept [absent]") or present ("Intercept [present]"), respectively, with the probability of coalitions being common given by 1 - these two. All estimates are on the log-odds scale and summarized by the median and 90% credible interval ("lwr90CI" - "upr90CI") of the posterior distribution.
 
+
+**Table S6**: Socio-ecological predictors of female coalitions (ordinal version of Model 4)
+```{r table s6}
+load("post_m4.ord_looped.robj")
+s4<- data.frame(Parameter = c("Intercept [absent]", "Intercept [present]", "Food defensible = yes", "Female philopatry = yes", "Phylo SD"), Mean = c(round(median(post_m4.ord_looped$'b_Intercept[1]'),2), round(median(post_m4.ord_looped$'b_Intercept[2]'),2), round(median(post_m4.ord_looped$b_Food_resource_defendable),2), round(median(post_m4.ord_looped$b_f_philopatry),2), round(median(post_m4.ord_looped$sd_Genus_species__Intercept),2)), lwr90CI = c(round(HPDI(post_m4.ord_looped$'b_Intercept[1]', prob=0.90)[1],2), round(HPDI(post_m4.ord_looped$'b_Intercept[2]', prob=0.90)[1],2), round(HPDI(post_m4.ord_looped$b_Food_resource_defendable, prob=0.90)[1],2),round(HPDI(post_m4.ord_looped$b_f_philopatry, prob=0.90)[1],2), round(HPDI(post_m4.ord_looped$sd_Genus_species__Intercept, prob=0.90)[1],2)), upr90CI = c(round(HPDI(post_m4.ord_looped$'b_Intercept[1]', prob=0.90)[2],2), round(HPDI(post_m4.ord_looped$'b_Intercept[2]', prob=0.90)[2],2), round(HPDI(post_m4.ord_looped$b_Food_resource_defendable, prob=0.90)[2],2),round(HPDI(post_m4.ord_looped$b_f_philopatry, prob=0.90)[2],2), round(HPDI(post_m4.ord_looped$sd_Genus_species__Intercept, prob=0.90)[2],2)))
+kable(s4)
+```
+
+**Table S7**: Socio-ecological predictors of male coalitions (ordinal version of Model 5)
+```{r table s7}
+load("post_m5.ord_looped.robj")
+s5<- data.frame(Parameter = c("Intercept [absent]", "Intercept [present]", "Sexual dimorphism", "Male philopatry = yes", "Phylo SD"), Mean = c(round(median(post_m5.ord_looped$'b_Intercept[1]'),2), round(median(post_m5.ord_looped$'b_Intercept[2]'),2), round(median(post_m5.ord_looped$b_SexDim.c),2), round(median(post_m5.ord_looped$b_m_philopatry),2), round(median(post_m5.ord_looped$sd_Genus_species__Intercept),2)), lwr90CI = c(round(HPDI(post_m5.ord_looped$'b_Intercept[1]', prob=0.90)[1],2), round(HPDI(post_m5.ord_looped$'b_Intercept[2]', prob=0.90)[1],2), round(HPDI(post_m5.ord_looped$b_SexDim.c, prob=0.90)[1],2),round(HPDI(post_m5.ord_looped$b_m_philopatry, prob=0.90)[1],2), round(HPDI(post_m5.ord_looped$sd_Genus_species__Intercept, prob=0.90)[1],2)), upr90CI = c(round(HPDI(post_m5.ord_looped$'b_Intercept[1]', prob=0.90)[2],2), round(HPDI(post_m5.ord_looped$'b_Intercept[2]', prob=0.90)[2],2), round(HPDI(post_m5.ord_looped$b_SexDim.c, prob=0.90)[2],2),round(HPDI(post_m5.ord_looped$b_m_philopatry, prob=0.90)[2],2), round(HPDI(post_m5.ord_looped$sd_Genus_species__Intercept, prob=0.90)[2],2)))
+kable(s5)
+```
 
 
 ```{r Figure S1, eval=FALSE}
