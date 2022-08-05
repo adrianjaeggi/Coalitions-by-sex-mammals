@@ -9,11 +9,19 @@ If you'd like access to the saved posterior samples - which were too large to pu
 List of files and explanation:
 
 Sex bias in intragroup coalitions across mammals_6-15-22.xlsx - Dataset compiled by Jennifer Smith and Rose Holmes
+
 TreeBlockSexBiasCooperation.nex - Sample of 100 phylogenies for the included species, downloaded from vertlife.org
+
 0_Data prep.R - Code for reading excel dataset and phylogenies, some data cleaning
+
 sexbiascoalitions.csv - Clean dataset produced by 0_Data prep.R
+
 1_Main_models.R - Code for running analyses using consensus phylogeny (not updated after initial submission)
+
 2_Main_models_looped.R - Code for running analyses using sample of phylogenies
+
 Sex-bias coalitions results.Rmd - Markdown script that produces the results section of the paper from the saved posterior samples
+
 Sex diff coalitions supplement.Rmd - Markdown script that produces the supplemental results file from the saved posterior samples
+
 PhyForFigure.tre - Consensus phylogeny produced in the process of making figure 2
